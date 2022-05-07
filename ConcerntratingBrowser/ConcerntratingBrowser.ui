@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ConcerntratingBrowser</class>
+ <widget class="QMainWindow" name="ConcerntratingBrowser">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1145</width>
+    <height>826</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="back">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resource.qrc">
+          <normaloff>:/icon/data/go-previous.png</normaloff>:/icon/data/go-previous.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="forward">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resource.qrc">
+          <normaloff>:/icon/data/go-next.png</normaloff>:/icon/data/go-next.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="refresh">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resource.qrc">
+          <normaloff>:/icon/data/view-refresh.png</normaloff>:/icon/data/view-refresh.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="newTab">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resource.qrc">
+          <normaloff>:/icon/data/text-html.png</normaloff>:/icon/data/text-html.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="url"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="submit">
+        <property name="text">
+         <string>Go</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="TabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1145</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TabWidget</class>
+   <extends>QTabWidget</extends>
+   <header>TabWidget.h</header>
+   <container>1</container>
+   <slots>
+    <slot>newTab()</slot>
+    <slot>forward()</slot>
+    <slot>back()</slot>
+    <slot>refresh()</slot>
+   </slots>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>back</sender>
+   <signal>clicked()</signal>
+   <receiver>tabWidget</receiver>
+   <slot>back()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>58</x>
+     <y>51</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>318</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>forward</sender>
+   <signal>clicked()</signal>
+   <receiver>tabWidget</receiver>
+   <slot>forward()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>158</x>
+     <y>51</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>318</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>url</sender>
+   <signal>returnPressed()</signal>
+   <receiver>ConcerntratingBrowser</receiver>
+   <slot>urlFinishEditing()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>449</x>
+     <y>51</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>submit</sender>
+   <signal>clicked()</signal>
+   <receiver>ConcerntratingBrowser</receiver>
+   <slot>urlFinishEditing()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>741</x>
+     <y>51</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>refresh</sender>
+   <signal>clicked()</signal>
+   <receiver>tabWidget</receiver>
+   <slot>refresh()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>358</x>
+     <y>51</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>318</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>newTab</sender>
+   <signal>clicked()</signal>
+   <receiver>tabWidget</receiver>
+   <slot>newTab()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>258</x>
+     <y>51</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>318</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>forward()</slot>
+  <slot>back()</slot>
+  <slot>urlFinishEditing()</slot>
+  <slot>refresh()</slot>
+ </slots>
+</ui>

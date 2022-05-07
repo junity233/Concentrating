@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ScriptPage</class>
+ <widget class="QWidget" name="ScriptPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>590</width>
+    <height>492</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>CodePage</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <layout class="QVBoxLayout" name="scriptListLayout">
+     <item>
+      <widget class="QListView" name="listView">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="buttonsLayout">
+       <item>
+        <widget class="QPushButton" name="newScript">
+         <property name="text">
+          <string>New</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="deleteScript">
+         <property name="text">
+          <string>Delete</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="scriptEditLayout">
+     <item>
+      <widget class="QCodeEditor" name="codeEditor" native="true"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="runScrupt">
+       <property name="text">
+        <string>Run</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QCodeEditor</class>
+   <extends>QWidget</extends>
+   <header location="global">QCodeEditor.hpp</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>deleteScript</sender>
+   <signal>clicked()</signal>
+   <receiver>ScriptPage</receiver>
+   <slot>deleteScript()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>80</x>
+     <y>464</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>294</x>
+     <y>245</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>newScript</sender>
+   <signal>clicked()</signal>
+   <receiver>ScriptPage</receiver>
+   <slot>newScript()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>222</x>
+     <y>464</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>294</x>
+     <y>245</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>listView</sender>
+   <signal>clicked(QModelIndex)</signal>
+   <receiver>ScriptPage</receiver>
+   <slot>listViewClicked(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>151</x>
+     <y>227</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>294</x>
+     <y>245</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>runScrupt</sender>
+   <signal>clicked()</signal>
+   <receiver>ScriptPage</receiver>
+   <slot>runScript()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>438</x>
+     <y>465</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>294</x>
+     <y>245</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>listViewClicked(QModelIndex)</slot>
+  <slot>newScript()</slot>
+  <slot>deleteScript()</slot>
+  <slot>runScript()</slot>
+ </slots>
+</ui>

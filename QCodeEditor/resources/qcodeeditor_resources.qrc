@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>default_style.xml</file>
+        <file>languages/lua.xml</file>
+    </qresource>
+</RCC>

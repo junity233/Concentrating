@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>qrc;rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Translation Files">
+      <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
+      <Extensions>ts</Extensions>
+    </Filter>
+    <Filter Include="Header Files\internal">
+      <UniqueIdentifier>{871b8113-e95e-402f-998e-aa47e92811e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\language">
+      <UniqueIdentifier>{2c7e7a51-1341-4c5d-8bd8-fc9d787ec59b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="QCodeEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClInclude Include="include\internal\QHighlightBlockRule.hpp">
+      <Filter>Header Files\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="include\internal\QHighlightRule.hpp">
+      <Filter>Header Files\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="include\internal\QStyleSyntaxHighlighter.hpp">
+      <Filter>Header Files\internal</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="QFramedTextAttribute.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QLanguage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QLineNumberArea.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QLuaCompleter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QLuaHighlighter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QStyleSyntaxHighlighter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QSyntaxStyle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="include\QCodeEditor">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\QFramedTextAttribute">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\QHighlightBlockRule">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\QHighlightRule">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\QLanguage">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\QLineNumberArea">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\QLuaCompleter">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\QLuaHighlighter">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\QStyleSyntaxHighlighter">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\QSyntaxStyle">
+      <Filter>Header Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="include\internal\QCodeEditor.hpp">
+      <Filter>Header Files\internal</Filter>
+    </QtMoc>
+    <QtMoc Include="include\internal\QFramedTextAttribute.hpp">
+      <Filter>Header Files\internal</Filter>
+    </QtMoc>
+    <QtMoc Include="include\internal\QLanguage.hpp">
+      <Filter>Header Files\internal</Filter>
+    </QtMoc>
+    <QtMoc Include="include\internal\QLineNumberArea.hpp">
+      <Filter>Header Files\internal</Filter>
+    </QtMoc>
+    <QtMoc Include="include\internal\QLuaCompleter.hpp">
+      <Filter>Header Files\internal</Filter>
+    </QtMoc>
+    <QtMoc Include="include\internal\QLuaHighlighter.hpp">
+      <Filter>Header Files\internal</Filter>
+    </QtMoc>
+    <QtMoc Include="include\internal\QSyntaxStyle.hpp">
+      <Filter>Header Files\internal</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="resources\default_style.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="resources\languages\lua.xml">
+      <Filter>Resource Files\language</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="resources\qcodeeditor_resources.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="QCodeEditor_global.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

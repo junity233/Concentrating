@@ -1,0 +1,34 @@
+[
+    {
+        "code": "Concer.keyboard.lock()\nConcer.wait(10)\nConcer.keyboard.unlock()\n",
+        "name": "New Script"
+    },
+    {
+        "code": "Concer.browser.open()",
+        "name": "21额1"
+    },
+    {
+        "code": "Concer.browser.set_allowed_hosts({\"www.baidu.com\",\"www.acwing.com\"})\nConcer.browser.set_default_url(\"www.baidu.com\")\nConcer.browser.open()\n\nfor i=0,20 do\n    Concer.log(Concer.browser.get_current_url())\n    Concer.wait(1)\nend\n\nConcer.browser.close()",
+        "name": "LusTest"
+    },
+    {
+        "code": "Concer.log(Concer.setting.read(\"1212\"))",
+        "name": "1"
+    },
+    {
+        "code": "res=Concer.msgbox(\"111\",\"222\",MsgboxType.yesnocancel+MsgboxType.iconhand)\nConcer.log(res==MsgboxType.ok)",
+        "name": "msgbox"
+    },
+    {
+        "code": "Concer.setting.write(\"1212\",true)",
+        "name": "setting"
+    },
+    {
+        "code": "Concer.wait(10)\nConcer.browser.open()\nConcer.wait(10)\nConcer.browser.close()",
+        "name": "process"
+    },
+    {
+        "code": "Concer.wait(100)",
+        "name": "Hook"
+    }
+]

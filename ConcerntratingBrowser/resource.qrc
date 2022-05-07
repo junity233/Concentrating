@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file>data/dialog-error.png</file>
+        <file>data/edit-clear.png</file>
+        <file>data/go-bottom.png</file>
+        <file>data/go-next.png</file>
+        <file>data/go-previous.png</file>
+        <file>data/process-stop.png</file>
+        <file>data/text-html.png</file>
+        <file>data/view-refresh.png</file>
+    </qresource>
+</RCC>
