@@ -1,6 +1,9 @@
 #include "ConcerntratingBrowser.h"
 #include "ui_ConcerntratingBrowser.h"
 #include <QtPlatformHeaders\qwindowswindowfunctions.h>
+#include <qlabel.h>
+#include <qtimer.h>
+#include <qdatetime.h>
 
 #include "TabWidget.h"
 
@@ -10,6 +13,17 @@ ConcerntratingBrowser::ConcerntratingBrowser(QWidget *parent)
 	ui = new Ui::ConcerntratingBrowser;
 	ui->setupUi(this);
 
+	timeLabel = new QLabel(this);
+
+	ui->statusbar->addWidget(timeLabel);
+
+	timer = new QTimer(this);
+	timer->setInterval(1000);
+	timer->start();
+
+	connect(timer, &QTimer::timeout, [this]() {
+		timeLabel->setText(QDateTime::currentDateTime().toString("yy/MM/dd hh:mm:ss"));
+		});
 
 	setWindowFlag(Qt::Window, true);
 	setWindowFlag(Qt::WindowStaysOnTopHint);
@@ -19,7 +33,7 @@ ConcerntratingBrowser::ConcerntratingBrowser(QWidget *parent)
 		this->ui->url->setText(url.toString());
 		});
 
-	_shouldHide = true;
+	_isOpened = true;
 
 }
 
@@ -33,9 +47,27 @@ void ConcerntratingBrowser::setDefaultUrl(const QUrl& url)
 	ui->tabWidget->setDefaultUrl(url);
 }
 
+void ConcerntratingBrowser::resetAllowedHosts()
+{
+	setAllowedHosts(QStringList());
+}
+
+void ConcerntratingBrowser::resetDefaultUrl()
+{
+	setDefaultUrl(QUrl::fromUserInput("about:blank"));
+}
+
 QUrl ConcerntratingBrowser::currentUrl() const
 {
 	return ui->tabWidget->currentUrl();
+}
+
+void ConcerntratingBrowser::load(const QUrl& url)
+{
+	if (ui->tabWidget->currentView() == Q_NULLPTR)
+		ui->tabWidget->createTab();
+
+	ui->tabWidget->setCurrentUrl(url);
 }
 
 void ConcerntratingBrowser::forward()

@@ -1,4 +1,4 @@
-#include "LuaBinding.h"#
+#include "LuaBinding.h"
 #include <Windows.h>
 #include <hook.h>
 #include <ctime>
@@ -11,6 +11,10 @@
 #include <sys/timeb.h>
 #include <qmessagebox.h>
 #include <qdatetime.h>
+#include "MouseHelper.h"
+#include "KeyboardHelper.h"
+#include "ScriptManager.h"
+#include <qsystemtrayicon.h>
 
 struct lua_enum_pair {
 	const char* name;
@@ -22,18 +26,27 @@ struct lua_enum_pair {
 
 static void lua_bind_vkcode(lua_State* L);
 
-static int lua_lock_mouse(lua_State* L);
-static int lua_unlock_mouse(lua_State* L);
-static int lua_lock_keyboard(lua_State* L);
-static int lua_unlock_keyboard(lua_State* L);
-static int lua_wait(lua_State* L);
-static int lua_wait_until(lua_State* L);
-static int lua_set_key_status(lua_State* L);
-static int lua_get_key_status(lua_State* L);
-static int lua_get_vkcode(lua_State* L);
 static int lua_exec(lua_State* L);
 static int lua_shutdown(lua_State* L);
 static int lua_msgbox(lua_State* L);
+static int lua_wait(lua_State* L);
+static int lua_wait_until(lua_State* L);
+static int lua_show_msg(lua_State* L);
+static int lua_run_script(lua_State* L);
+
+static int lua_mouse_lock(lua_State* L);
+static int lua_mouse_unlock(lua_State* L);
+static int lua_mouse_pos(lua_State* L);
+static int lua_mouse_move(lua_State* L);
+
+static int lua_keyboard_lock(lua_State* L);
+static int lua_keyboard_unlock(lua_State* L);
+static int lua_keyboard_set_key_status(lua_State* L);
+static int lua_keyboard_get_key_status(lua_State* L);
+static int lua_keyboard_enable_keys(lua_State* L);
+static int lua_keyboard_disable_keys(lua_State* L);
+
+static int lua_get_vkcode(lua_State* L);
 
 static int lua_process_create(lua_State* L);
 static int lua_process_find(lua_State* L);
@@ -47,6 +60,7 @@ static int lua_browser_close(lua_State* L);
 static int lua_browser_set_allowed_hosts(lua_State* L);
 static int lua_browser_set_default_url(lua_State* L);
 static int lua_browser_get_current_url(lua_State* L);
+static int lua_browser_load(lua_State* L);
 
 static void __lua_to_value(lua_State* L,const QVariant& v);
 static void __lua_to_map(lua_State* L, const QVariantMap& vmap);
@@ -87,26 +101,50 @@ void lua_bind_msgboxType(lua_State* L)
 	lua_setglobal(L, "MsgboxType");
 }
 
-int lua_lock_mouse(lua_State* L) {
-	int res = InstallMouseHook();
+int lua_mouse_lock(lua_State* L) {
+	int res = MouseHelper::lock();
 	lua_pushboolean(L, res);
 	return 1;
 }
 
-int lua_unlock_mouse(lua_State* L) {
-	int res = UninstallMouseHook();
+int lua_mouse_unlock(lua_State* L) {
+	int res = MouseHelper::unlock();
 	lua_pushboolean(L, res);
 	return 1;
 }
 
-int lua_lock_keyboard(lua_State * L) {
-	int res = InstallKeyboardHook();
+int lua_mouse_pos(lua_State* L)
+{
+	auto pos = MouseHelper::pos();
+
+	lua_pushinteger(L, pos.first);
+	lua_pushinteger(L, pos.second);
+
+	return 2;
+}
+
+int lua_mouse_move(lua_State* L)
+{
+	if (lua_gettop(L) < 2 || !lua_isinteger(L, -1) || !lua_isinteger(L, -2))
+		return luaL_error(L, "mouse.move needs 2 argument:int,int!");
+
+	int x, y;
+	x = lua_tointeger(L, -2);
+	y = lua_tointeger(L, -1);
+
+	MouseHelper::move(x, y);
+
+	return 0;
+}
+
+int lua_keyboard_lock(lua_State * L) {
+	int res = KeyboardHelper::lock();
 	lua_pushboolean(L, res);
 	return 1;
 }
 
-int lua_unlock_keyboard(lua_State* L) {
-	int res = UninstallKeyboardHook();
+int lua_keyboard_unlock(lua_State* L) {
+	int res = KeyboardHelper::unlock();
 	lua_pushboolean(L, res);
 	return 1;
 }
@@ -173,7 +211,15 @@ static inline tm* __get_time() {
 }
 
 static inline bool __time_less_than(tm* t, int h, int m, int s) {
-	return t->tm_hour < h&& t->tm_min < m&& t->tm_sec < s;
+	if (t->tm_hour < h)
+		return true;
+	else if(t->tm_hour == h) {
+		if (t->tm_min < m)
+			return true;
+		else if (t->tm_min == m && t->tm_sec < s)
+			return true;
+	}
+	return false;
 }
 
 #define check_argument_int(var,idx) \
@@ -204,12 +250,64 @@ int lua_wait_until(lua_State* L) {
 
 	while (__time_less_than(t, hour, minite, second)) {
 		QApplication::processEvents();
+		t = __get_time();
 	}
 
 	return 0;
 }
 
-int lua_set_key_status(lua_State* L)
+int lua_show_msg(lua_State* L)
+{
+	auto systemTray = MainWindow::instance()->systemTray();
+
+	if (lua_gettop(L) < 2 || !lua_isstring(L, -1) || !lua_isstring(L, -2))
+		return luaL_error(L, "show_msg needs 3 argument:string,string");
+
+	QString title = lua_tostring(L, -2);
+	QString msg = lua_tostring(L, -1);
+
+	systemTray->showMessage(title, msg);
+
+	return 0;
+}
+
+int lua_run_script(lua_State* L)
+{
+	if (lua_gettop(L) < 1||(!lua_isinteger(L,-1)&& !lua_isstring(L, -1)))
+		return luaL_error(L, "run_script needs 1 argument:string or integer!");
+
+	QString script;
+	auto instance = ScriptManager::instance();
+
+	if (lua_isinteger(L, -1)) {
+		int idx = lua_tointeger(L, -1);
+
+		if (idx >= 0 && idx < instance->scriptCount())
+			script = instance->script(idx).code;
+		else
+			return luaL_error(L, "index out of range!");
+	}
+	else if (lua_isstring(L, -1)) {
+		QString name = lua_tostring(L, -1);
+		bool has = false;
+
+		for (auto i : ScriptManager::instance()->scripts())
+			if (i.name == name) {
+				script = i.code;
+				has = true;
+				break;
+			}
+
+		if (!has)
+			return luaL_error(L, "No such script!");
+	}
+
+	luaL_dostring(L, script.toStdString().c_str());
+
+	return 0;
+}
+
+int lua_keyboard_set_key_status(lua_State* L)
 {
 	if (lua_gettop(L) < 2)
 		return luaL_error(L, "set_key_status needs at least 2 arguments!");
@@ -221,11 +319,11 @@ int lua_set_key_status(lua_State* L)
 		return luaL_error(L, "Second argument of set_key_status should be boolean!");
 
 
-	SetKeyStatus(lua_tointeger(L, -2), lua_toboolean(L, -1));
+	KeyboardHelper::setKeyState(lua_tointeger(L, -2), lua_toboolean(L, -1));
 	return 0;
 }
 
-int lua_get_key_status(lua_State* L)
+int lua_keyboard_get_key_status(lua_State* L)
 {
 	if (lua_gettop(L) < 1)
 		return luaL_error(L, "get_key_status needs at least 2 arguments!");
@@ -233,8 +331,84 @@ int lua_get_key_status(lua_State* L)
 	if (!lua_isinteger(L, -1))
 		return luaL_error(L, "Argumen of get_key_status should be int!");
 
-	lua_pushboolean(L, GetKeyStatus(lua_tointeger(L, -1)));
+	lua_pushboolean(L, KeyboardHelper::keyState(lua_tointeger(L, -1)));
 	return 1;
+}
+
+int lua_keyboard_enable_keys(lua_State* L)
+{
+	if (lua_gettop(L) < 1)
+		return luaL_error(L, "keyboard.enable_keys needs 1 or more arguments!");
+
+	QVector<int> keys;
+
+	if (lua_istable(L, -1)) {
+		lua_pushnil(L);
+
+		while (lua_next(L, -1)) {
+			if(!lua_isinteger(L,-1))
+				return luaL_error(L, "keyboard.enable_keys needs int-list argument!");
+
+			keys.append(lua_tointeger(L, -1));
+
+			lua_pop(L, 1);
+		}
+	}
+	else {
+		int cnt = lua_gettop(L);
+
+		for (int i = 1; i <= cnt; i++)
+		{
+			if (!lua_isinteger(L, -i))
+				return luaL_error(L, "keyboard.enable_keys needs int argument!");
+
+			keys.append(lua_tointeger(L, -i));
+		}
+	}
+
+	for (auto i : keys) {
+		KeyboardHelper::setKeyState(i, true);
+	}
+
+	return 0;
+}
+
+int lua_keyboard_disable_keys(lua_State* L)
+{
+	if (lua_gettop(L) < 1)
+		return luaL_error(L, "keyboard.disable_keys needs 1 or more arguments!");
+
+	QVector<int> keys;
+
+	if (lua_istable(L, -1)) {
+		lua_pushnil(L);
+
+		while (lua_next(L, -1)) {
+			if (!lua_isinteger(L, -1))
+				return luaL_error(L, "keyboard.disable_keys needs int-list argument!");
+
+			keys.append(lua_tointeger(L, -1));
+
+			lua_pop(L, 1);
+		}
+	}
+	else {
+		int cnt = lua_gettop(L);
+
+		for (int i = 1; i <= cnt; i++)
+		{
+			if (!lua_isinteger(L, -i))
+				return luaL_error(L, "keyboard.disable_keys needs int argument!");
+
+			keys.append(lua_tointeger(L, -i));
+		}
+	}
+
+	for (auto i : keys) {
+		KeyboardHelper::setKeyState(i, false);
+	}
+
+	return 0;
 }
 
 int lua_get_vkcode(lua_State* L)
@@ -275,7 +449,7 @@ int lua_msgbox(lua_State* L)
 	title = lua_tostring(L, -3);
 	msg = lua_tostring(L, -2);
 	type = lua_tointeger(L, -1);
-	MB_OK;
+
 	int res = MessageBoxA(NULL, msg, title, type);
 	lua_pushinteger(L,res);
 
@@ -413,18 +587,7 @@ QVariant __lua_from_value(lua_State* L)
 	else if (lua_istable(L, -1)) {
 		QVariantMap map = __lua_from_table(L);
 
-		if (map.contains("__type__")) {
-			QTime t;
-			switch (map["__type__"].toInt()) {
-			case QVariant::Time:
-				t.setHMS(map["hour"].toInt(), map["minute"].toInt(), map["second"].toInt());
-				return t;
-			case QVariant::Map:
-			case QVariant::List:
-				map.remove("__type__");
-				return map;
-			}
-		}
+		return map;
 	}
 	return QVariant();
 }
@@ -542,6 +705,8 @@ int lua_browser_set_allowed_hosts(lua_State* L)
 	}
 
 	MainWindow::instance()->browser()->setAllowedHosts(list);
+
+	return 0;
 }
 
 int lua_browser_set_default_url(lua_State* L)
@@ -552,7 +717,9 @@ int lua_browser_set_default_url(lua_State* L)
 
 	QString url = lua_tostring(L, -1);
 
-	MainWindow::instance()->browser()->setDefaultUrl(url);
+	MainWindow::instance()->browser()->setDefaultUrl(QUrl::fromUserInput(url));
+
+	return 0;
 }
 
 int lua_browser_get_current_url(lua_State* L)
@@ -560,6 +727,17 @@ int lua_browser_get_current_url(lua_State* L)
 	auto url = MainWindow::instance()->browser()->currentUrl().toString().toStdString();
 	lua_pushlstring(L, url.c_str(), url.length());
 	return 1;
+}
+
+int lua_browser_load(lua_State* L)
+{
+	if (lua_gettop(L) < 1 || !lua_isstring(L, -1))
+		return luaL_error(L, "browser.load needs 1 argument:string!");
+
+	QString url = lua_tostring(L, -1);
+	LuaBinder::instance()->browserLoadUrl(QUrl::fromUserInput(url));
+
+	return 0;
 }
 
 #undef check_argument_int
@@ -571,26 +749,33 @@ static luaL_Reg concer_functions[] = {
 	{"exec",lua_exec},
 	{"shutdown",lua_shutdown},
 	{"msgbox",lua_msgbox},
+	{"show_msg",lua_show_msg},
+	{"run_script",lua_run_script},
 	{NULL,NULL}
 };
 
 static luaL_Reg mouse_functions[] = {
-	{"lock",lua_lock_mouse},
-	{"unlock",lua_unlock_mouse},
+	{"lock",lua_mouse_lock},
+	{"unlock",lua_mouse_unlock},
+	{"pos",lua_mouse_pos},
+	{"move",lua_mouse_move},
 	{NULL,NULL}
 };
 
 static luaL_Reg keyboard_functions[] = {
-	{"lock",lua_lock_keyboard},
-	{"unlock",lua_unlock_keyboard},
-	{"get_key_status",lua_get_key_status},
-	{"set_key_status",lua_set_key_status},
+	{"lock",lua_keyboard_lock},
+	{"unlock",lua_keyboard_unlock},
+	{"get_key_status",lua_keyboard_get_key_status},
+	{"set_key_status",lua_keyboard_set_key_status},
+	{"enable_keys",lua_keyboard_enable_keys},
+	{"disable_keys",lua_keyboard_disable_keys},
 	{NULL,NULL}
 };
 
 static luaL_Reg browser_functions[] = {
 	{"open",lua_browser_open},
 	{"close",lua_browser_close},
+	{"load",lua_browser_load},
 	{"set_allowed_hosts",lua_browser_set_allowed_hosts},
 	{"set_default_url",lua_browser_set_default_url},
 	{"get_current_url",lua_browser_get_current_url},

@@ -20,7 +20,7 @@ public slots:
 
 signals:
 	void scriptRunFailed(const QString& reason);
-	void scriptRunFinished(int exitCode);
+	void scriptRunFinished(bool exitCode);
 
 private:
 	bool running;

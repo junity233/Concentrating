@@ -67,6 +67,10 @@ void SettingPage::resetGeneral()
 	}
 	int idx = instance->value("autostart.script", "").toInt();
 	ui.autoStartScript->setCurrentText(ScriptManager::instance()->script(idx).name);
+
+	ui.noticeScriptStart->setChecked(instance->value("system.notice_script_start", true).toBool());
+	ui.noticeScriptFinish->setChecked(instance->value("system.notice_script_finished", true).toBool());
+	ui.noticeScriptFailed->setChecked(instance->value("system.notice_script_failed", true).toBool());
 }
 
 void SettingPage::resetScript()
@@ -84,8 +88,11 @@ void SettingPage::submitGeneral()
 {
 	auto instance = SettingManager::instance();
 	instance->setValue("autostart.script", ui.autoStartScript->currentIndex());
+	instance->setValue("system.notice_script_start", ui.noticeScriptStart->isChecked());
+	instance->setValue("system.notice_script_finished", ui.noticeScriptFinish->isChecked());
+	instance->setValue("system.notice_script_failed", ui.noticeScriptFailed->isChecked());
 
-	AutoStartHelper::setAutoStart(ui.enableAutoStart->isChecked());
+	AutoStartHelper::setAutoStartEnable(ui.enableAutoStart->isChecked());
 }
 
 void SettingPage::submitScript()
@@ -103,12 +110,12 @@ void SettingPage::submitBrowser()
 
 void SettingPage::enableAutoStart()
 {
-	AutoStartHelper::setAutoStart(true);
+	AutoStartHelper::setAutoStartEnable(true);
 }
 
 void SettingPage::disableAutoStart()
 {
-	AutoStartHelper::setAutoStart(false);
+	AutoStartHelper::setAutoStartEnable(false);
 }
 
 void SettingPage::reset(int idx)

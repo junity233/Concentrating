@@ -2,8 +2,15 @@
 #include "SettingManager.h"
 #include "ScriptManager.h"
 #include <qevent.h>
+#include <qsystemtrayicon.h>
 #include <ConcerntratingBrowser.h>
 #include <qdesktopwidget.h>
+#include <qmessagebox.h>
+#include <qmenu.h>
+#include <qaction.h>
+#include <qcursor.h>
+#include <qdebug.h>
+#include <qresource.h>
 #include "LuaBinding.h"
 
 #include "ProcessProtecter.h"
@@ -17,8 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     SettingManager::instance()->load("settings.json");
     ScriptManager::instance()->load("scripts.json");
 
-
-    ui.setupUi(this);
+    setWindowIcon(QIcon(":/icon.ico"));
 
     _browser = new ConcerntratingBrowser(this);
     QRect rect = QApplication::desktop()->screenGeometry();
@@ -30,34 +36,73 @@ MainWindow::MainWindow(QWidget *parent)
         ui.logPage->log(msg, LogPage::Script);
         });
 
+    _instance = this;
+
+    ui.setupUi(this);
+
     connect(ui.scriptPage, &ScriptPage::scriptRunFailed, this, &MainWindow::scriptRunFailed);
     connect(ui.scriptPage, &ScriptPage::statusBarMessage, [this](const QString& msg, int timeout) {
         statusBar()->showMessage(msg, timeout);
         });
+    connect(ui.scriptPage, &ScriptPage::scriptAboutToRun, this, &MainWindow::scriptAboutToRun);
 
     connect(ui.scriptPage, &ScriptPage::scriptRunFinished, this, &MainWindow::scriptRunFinished);
 
+    LuaBinder* binder = LuaBinder::instance();
 
-
-    connect(LuaBinder::instance(), &LuaBinder::openBrowser,_browser,&ConcerntratingBrowser::showFullScreen);
-    connect(LuaBinder::instance(), &LuaBinder::closeBrowser, _browser, &ConcerntratingBrowser::hide);
+    connect(binder, &LuaBinder::openBrowser,_browser,&ConcerntratingBrowser::showFullScreen);
+    connect(binder, &LuaBinder::closeBrowser, _browser, &ConcerntratingBrowser::hide);
+    connect(binder, &LuaBinder::browserLoadUrl, _browser, &ConcerntratingBrowser::load);
 
     connect(ui.tabWidget, &QTabWidget::currentChanged, [this](int idx) {
         if (idx == 1)
             ui.settingPage->reset(-1);
         });
-    _instance = this;
+
+
+    setupSystemTray();
+
+    emit initializeFinished();
 }
 
 void MainWindow::scriptRunFailed(const QString& reason) {
-    ui.logPage->log(tr("Script runs failed:\n\t%1").arg(reason),LogPage::Lua);
+    ui.logPage->log(reason,LogPage::Lua);
+
+    if (SettingManager::instance()->value("system.notice_script_failed", false).toBool())
+        _systemTray->showMessage(tr("Notice"), tr("Script runs failed:%1").arg(reason));
 }
 
-void MainWindow::scriptRunFinished(int exitCode)
+void MainWindow::scriptRunFinished(bool exitCode)
 {
     QString msg = tr("Script runs completely,exit code:%1").arg(exitCode);
     ui.logPage->log(msg, LogPage::System);
-    statusBar()->showMessage(msg);
+    statusBar()->showMessage(msg, 3);
+
+    if (exitCode == 0 && SettingManager::instance()->value("system.notice_script_finished", false).toBool())
+        _systemTray->showMessage(tr("Notice"), tr("Script runs finished"));
+}
+
+void MainWindow::scriptAboutToRun(int idx)
+{
+    QString name = ScriptManager::instance()->script(idx).name;
+
+    ui.logPage->log(tr("Script begin to run:%1").arg(name), LogPage::System);
+
+    if (SettingManager::instance()->value("system.notice_script_start", false).toBool())
+        _systemTray->showMessage(tr("Notice"), tr("Script \"%1\" is running!").arg(name));
+}
+
+void MainWindow::systemTrayActived(QSystemTrayIcon::ActivationReason reason)
+{
+    switch (reason) {
+    case QSystemTrayIcon::Trigger:
+    case QSystemTrayIcon::DoubleClick:
+        this->showWindow();
+        break;
+    case QSystemTrayIcon::Context:
+        _menu->exec(QCursor::pos());
+        break;
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
@@ -65,8 +110,52 @@ void MainWindow::closeEvent(QCloseEvent* event)
     ScriptManager::instance()->save("scripts.json");
     SettingManager::instance()->save("settings.json");
 
-    if (ui.scriptPage->isScriptRunning())
-        event->ignore();
-    else
-        ProcessProtecter::unprotect();
+    event->ignore();
+    this->hide();
+}
+
+void MainWindow::setupSystemTray()
+{
+    _systemTray = new QSystemTrayIcon(this);
+
+    _systemTray->setToolTip(tr("Concerntrating"));
+
+    _menu = new QMenu(this);
+
+    auto showAction = new QAction(tr("Show"), this);
+    auto exitAction = new QAction(tr("Exit"), this);
+
+    connect(showAction, &QAction::triggered, [this]() {
+        this->showWindow();
+        });
+
+    connect(exitAction, &QAction::triggered, [this]() {
+        if (!ui.scriptPage->isScriptRunning())
+        {
+            if (ProcessProtecter::isProtected())
+                ProcessProtecter::unprotect();
+
+            QApplication::exit(0);
+        }
+        else {
+            QMessageBox::warning(nullptr, tr("Note"), tr("A script is still running!Exiting is banned!"));
+        }
+        });
+
+    _menu->addAction(showAction);
+    _menu->addAction(exitAction);
+    
+
+    _systemTray->setContextMenu(_menu);
+    _systemTray->setIcon(QIcon(":/icon.ico"));
+
+    connect(_systemTray, &QSystemTrayIcon::activated, this, &MainWindow::systemTrayActived);
+
+    _systemTray->show();
+}
+
+void MainWindow::showWindow()
+{
+    if (this->isHidden())
+        this->show();
 }

@@ -24,7 +24,8 @@ public:
 signals:
 	void statusBarMessage(const QString& msg, int timeout = 0);
 	void scriptRunFailed(const QString& reason);
-	void scriptRunFinished(int exitCode);
+	void scriptRunFinished(bool exitCode);
+	void scriptAboutToRun(int idx);
 
 	void runLuaScript(int index);
 
@@ -40,6 +41,7 @@ private slots:
 private:
 	void updateScript(int index);
 	void saveCurrentScript();
+	void runAutoStartScript();
 
 protected:
 	void closeEvent(QCloseEvent* event);

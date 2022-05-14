@@ -35,7 +35,20 @@ QVariant SettingTableModel::data(const QModelIndex& index, int role) const
 			return key;
 		}
 		else if (column == 1) {
-			return _data[key];
+			const QVariant& v = _data[key];
+			auto type = v.type();
+
+			switch (type) {
+			case QVariant::String:
+			case QVariant::Int:
+			case QVariant::Double:
+			case QVariant::Bool:
+			case QVariant::Time:
+			case QVariant::Url:
+				return v;
+			default:
+				return QString("[%1]").arg(v.typeName());
+			}
 		}
 	}
 	return QVariant();
@@ -56,7 +69,28 @@ QVariant SettingTableModel::headerData(int section, Qt::Orientation orientation,
 
 Qt::ItemFlags SettingTableModel::flags(const QModelIndex& index) const
 {
-	return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+	int row = index.row();
+	int column = index.column();
+
+	QString key = _data.keys()[row];
+	if(column==0)
+		return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+	else if (column == 1) {
+		auto type = _data[key].type();
+		switch (type) {
+		case QVariant::String:
+		case QVariant::Int:
+		case QVariant::Double:
+		case QVariant::Bool:
+		case QVariant::Time:
+		case QVariant::Url:
+			return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+		default:
+			return Qt::ItemIsSelectable;
+		}
+	}
+
+	return Qt::ItemFlags();
 }
 
 bool SettingTableModel::setData(const QModelIndex& index, const QVariant& value, int role)

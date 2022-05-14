@@ -25,6 +25,7 @@ public:
 signals:
 	void openBrowser();
 	void closeBrowser();
+	void browserLoadUrl(const QUrl& url);
 
 private:
 	LuaLogCallback _logCallback;

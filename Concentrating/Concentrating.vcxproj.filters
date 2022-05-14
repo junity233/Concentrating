@@ -21,6 +21,30 @@
       <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
       <Extensions>ts</Extensions>
     </Filter>
+    <Filter Include="Header Files\Widgets">
+      <UniqueIdentifier>{6fc382bc-c569-4efc-af75-bdd54fb6510d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Managers">
+      <UniqueIdentifier>{ec14f932-623a-4363-a934-2a56a5387b67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Helpers">
+      <UniqueIdentifier>{616bf1cc-e27e-4ed9-b7d5-c7a10ba92c52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Models">
+      <UniqueIdentifier>{9150dc97-4861-4009-a78c-da49856ad24c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Models">
+      <UniqueIdentifier>{cf077172-0337-4295-876d-b29651283ee6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Helpers">
+      <UniqueIdentifier>{12e81bdd-1bd5-401b-a3b0-03220a43849b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Widgets">
+      <UniqueIdentifier>{61d90b52-4c57-455d-915a-0e7367dabf8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Managers">
+      <UniqueIdentifier>{323fe299-6664-4db7-bf2c-f0473d1e888d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="MainWindow.qrc">
@@ -29,75 +53,81 @@
     <QtUic Include="MainWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtMoc Include="MainWindow.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <ClCompile Include="MainWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ScriptPage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SettingPage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ScriptManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SettingManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ScriptListModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LogPage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LuaBinding.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LuaScriptRunner.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SettingTableModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AutoStartHelper.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyboardHelper.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaScriptRunner.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseHelper.cpp">
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="ProcessHelper.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="ProcessProtecter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="LogPage.cpp">
+      <Filter>Source Files\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWindow.cpp">
+      <Filter>Source Files\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptPage.cpp">
+      <Filter>Source Files\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingPage.cpp">
+      <Filter>Source Files\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingTableModel.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptListModel.cpp">
+      <Filter>Source Files\Models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="ScriptPage.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="SettingPage.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="ScriptListModel.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="LogPage.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="LuaScriptRunner.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="LuaBinding.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="MainWindow.h">
+      <Filter>Header Files\Widgets</Filter>
+    </QtMoc>
+    <QtMoc Include="LogPage.h">
+      <Filter>Header Files\Widgets</Filter>
+    </QtMoc>
+    <QtMoc Include="ScriptPage.h">
+      <Filter>Header Files\Widgets</Filter>
+    </QtMoc>
+    <QtMoc Include="SettingPage.h">
+      <Filter>Header Files\Widgets</Filter>
+    </QtMoc>
     <QtMoc Include="SettingTableModel.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Models</Filter>
+    </QtMoc>
+    <QtMoc Include="ScriptListModel.h">
+      <Filter>Header Files\Models</Filter>
+    </QtMoc>
+    <QtMoc Include="LuaScriptRunner.h">
+      <Filter>Header Files\Helpers</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -112,20 +142,29 @@
     </QtUic>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ScriptManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SettingManager.h">
+    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AutoStartHelper.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyboardHelper.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseHelper.h">
+      <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="ProcessHelper.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptManager.h">
+      <Filter>Header Files\Managers</Filter>
     </ClInclude>
     <ClInclude Include="ProcessProtecter.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -135,5 +174,10 @@
     <None Include="buttons.inc">
       <Filter>Header Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -50,4 +50,7 @@
       <Filter>Resource Files</Filter>
     </QtRcc>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="data\qt_attribution.json" />
+  </ItemGroup>
 </Project>

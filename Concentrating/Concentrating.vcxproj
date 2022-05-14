@@ -98,9 +98,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AutoStartHelper.cpp" />
+    <ClCompile Include="KeyboardHelper.cpp" />
     <ClCompile Include="LogPage.cpp" />
     <ClCompile Include="LuaBinding.cpp" />
     <ClCompile Include="LuaScriptRunner.cpp" />
+    <ClCompile Include="MouseHelper.cpp" />
     <ClCompile Include="ProcessHelper.cpp" />
     <ClCompile Include="ProcessProtecter.cpp" />
     <ClCompile Include="ScriptListModel.cpp" />
@@ -108,7 +110,10 @@
     <ClCompile Include="SettingManager.cpp" />
     <ClCompile Include="SettingPage.cpp" />
     <ClCompile Include="SettingTableModel.cpp" />
-    <QtRcc Include="MainWindow.qrc" />
+    <QtRcc Include="MainWindow.qrc">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+    </QtRcc>
     <QtUic Include="LogPage.ui" />
     <QtUic Include="ScriptPage.ui" />
     <QtUic Include="MainWindow.ui" />
@@ -145,14 +150,20 @@
     <QtMoc Include="LuaScriptRunner.h" />
     <QtMoc Include="LuaBinding.h" />
     <ClInclude Include="AutoStartHelper.h" />
+    <ClInclude Include="KeyboardHelper.h" />
+    <ClInclude Include="MouseHelper.h" />
     <ClInclude Include="ProcessHelper.h" />
     <ClInclude Include="ProcessProtecter.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="ScriptManager.h" />
     <ClInclude Include="SettingManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="buttons.inc" />
     <None Include="vkcodes.inc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

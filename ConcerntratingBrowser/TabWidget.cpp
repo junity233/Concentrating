@@ -50,7 +50,7 @@ QUrl TabWidget::currentUrl() const
 void TabWidget::setCurrentUrl(const QUrl& url)
 {
 	if(isUrlAllowed(url))
-		currentView()->setUrl(url);
+		currentView()->load(url);
 }
 
 void TabWidget::closeTab(int index)
@@ -69,7 +69,9 @@ void TabWidget::closeTab(int index)
 
 WebView* TabWidget::currentView() const
 {
-	return qobject_cast<WebView*>(currentWidget());
+	auto widget = currentWidget();
+
+	return qobject_cast<WebView*>(widget);
 }
 
 

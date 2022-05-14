@@ -5,6 +5,8 @@
 #include "LuaScriptRunner.h"
 #include "ProcessHelper.h"
 #include "ProcessProtecter.h"
+#include "SettingManager.h"
+#include "AutoStartHelper.h"
 
 #include <QLuaCompleter.hpp>
 #include <QLuaHighlighter.hpp>
@@ -34,14 +36,20 @@ ScriptPage::ScriptPage(QWidget *parent)
 	ui.codeEditor->setHighlighter(highlighter);
 
 	connect(runner, &LuaScriptRunner::scriptRunFailed, this, &ScriptPage::scriptRunFailed);
-	connect(runner, &LuaScriptRunner::scriptRunFinished, [this](int exitCode) {
-		ProcessProtecter::unprotect();
+	connect(runner, &LuaScriptRunner::scriptRunFinished, [this](bool exitCode) {
 		emit scriptRunFinished(exitCode);
+		ProcessProtecter::unprotect();
 		});
 	connect(this, &ScriptPage::runLuaScript, runner, &LuaScriptRunner::run);
 
+	connect(MainWindow::instance(), &MainWindow::initializeFinished, [this]() {
+		if (AutoStartHelper::isApplicationAutoStart())
+			runAutoStartScript();
+		});
+
 	currentIndex = -1;
 	updateScript(0);
+
 }
 
 ScriptPage::~ScriptPage()
@@ -83,6 +91,7 @@ void ScriptPage::runScript()
 		QMessageBox::information(this, tr("Note"), tr("A Script is already running"));
 	else {
 		ProcessProtecter::protect(ProcessHelper::currentPid());
+		emit scriptAboutToRun(currentIndex);
 		emit runLuaScript(currentIndex);
 	}
 }
@@ -103,12 +112,19 @@ void ScriptPage::updateScript(int index)
 	ui.codeEditor->setText(code);
 
 	currentIndex = index;
+	ui.listView->setCurrentIndex(model->index(index));
 }
 
 void ScriptPage::saveCurrentScript()
 {
 	if (currentIndex != -1)
 		ScriptManager::instance()->script(currentIndex).code = ui.codeEditor->toPlainText();
+}
+
+void ScriptPage::runAutoStartScript()
+{
+	int idx = SettingManager::instance()->value("autostart.script", 0).toInt();
+	emit runLuaScript(idx);
 }
 
 void ScriptPage::closeEvent(QCloseEvent* event)

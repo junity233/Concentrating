@@ -2,6 +2,9 @@
 #include <lua.hpp>
 #include "ScriptManager.h"
 
+#include "MainWindow.h"
+#include "ConcerntratingBrowser.h"
+#include "SettingManager.h"
 #include "LuaBinding.h"
 
 LuaScriptRunner::LuaScriptRunner(QObject *parent)
@@ -40,8 +43,19 @@ void LuaScriptRunner::run(int index) {
 		return;
 	}
 
+	auto browser = MainWindow::instance()->browser();
+
+	browser->resetAllowedHosts();
+	browser->resetDefaultUrl();
+
+	browser->setDefaultUrl(
+		QUrl::fromUserInput(
+			SettingManager::instance()->value("browser.default_page_url", "about:blank").toString()
+		)
+	);
+
 	running = true;
-	int res = luaL_dostring(L, script.toStdString().c_str());
+	bool res = luaL_dostring(L, script.toStdString().c_str());
 	running = false;
 
 	if (res != 0) {
