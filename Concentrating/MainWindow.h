@@ -8,6 +8,7 @@
 class ConcerntratingBrowser;
 class QMenu;
 class QAction;
+class QTimer;
 
 class MainWindow : public QMainWindow
 {
@@ -43,13 +44,16 @@ private:
     void setupSystemTray();
     void showWindow();
 
+    void setupBrowser();
+    void setupScriptPage();
+    void setupLuaBinder();
+
 private:
     Ui::MainWindowClass ui;
 
-    QSystemTrayIcon *_systemTray;
-
+    QSystemTrayIcon* _systemTray;
+    QTimer* _timer;
     QMenu *_menu;
-
     ConcerntratingBrowser* _browser;
     static MainWindow* _instance;
 };

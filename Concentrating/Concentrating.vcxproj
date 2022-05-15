@@ -105,6 +105,12 @@
     <ClCompile Include="MouseHelper.cpp" />
     <ClCompile Include="ProcessHelper.cpp" />
     <ClCompile Include="ProcessProtecter.cpp" />
+    <ClCompile Include="QVariantModel.cpp" />
+    <ClCompile Include="QVariantTreeNode.cpp" />
+    <ClCompile Include="ScheduleDelegate.cpp" />
+    <ClCompile Include="ScheduleManager.cpp" />
+    <ClCompile Include="ScheduleTableModel.cpp" />
+    <ClCompile Include="ScriptComboBox.cpp" />
     <ClCompile Include="ScriptListModel.cpp" />
     <ClCompile Include="ScriptManager.cpp" />
     <ClCompile Include="SettingManager.cpp" />
@@ -154,7 +160,13 @@
     <ClInclude Include="MouseHelper.h" />
     <ClInclude Include="ProcessHelper.h" />
     <ClInclude Include="ProcessProtecter.h" />
+    <QtMoc Include="QVariantModel.h" />
+    <QtMoc Include="QVariantTreeNode.h" />
     <ClInclude Include="resource.h" />
+    <QtMoc Include="ScriptComboBox.h" />
+    <QtMoc Include="ScheduleDelegate.h" />
+    <QtMoc Include="ScheduleManager.h" />
+    <QtMoc Include="ScheduleTableModel.h" />
     <ClInclude Include="ScriptManager.h" />
     <ClInclude Include="SettingManager.h" />
   </ItemGroup>

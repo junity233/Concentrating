@@ -52,7 +52,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="autoStartScript"/>
+           <widget class="ScriptComboBox" name="autoStartScript"/>
           </item>
          </layout>
         </widget>
@@ -129,10 +129,13 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_6">
        <item>
-        <widget class="QTableView" name="scriptSettingView">
-         <attribute name="horizontalHeaderStretchLastSection">
+        <widget class="QTreeView" name="scriptSettingView">
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <property name="sortingEnabled">
           <bool>true</bool>
-         </attribute>
+         </property>
         </widget>
        </item>
        <item>
@@ -198,6 +201,38 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="schedule">
+      <attribute name="title">
+       <string>Schedule</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QTableView" name="scheduleView">
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QPushButton" name="newTask">
+           <property name="text">
+            <string>New</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="deleteTask">
+           <property name="text">
+            <string>Delete</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
@@ -221,6 +256,13 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>ScriptComboBox</class>
+   <extends>QComboBox</extends>
+   <header>ScriptComboBox.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

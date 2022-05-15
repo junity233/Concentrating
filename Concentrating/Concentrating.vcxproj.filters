@@ -103,6 +103,24 @@
     <ClCompile Include="ScriptListModel.cpp">
       <Filter>Source Files\Models</Filter>
     </ClCompile>
+    <ClCompile Include="QVariantTreeNode.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="QVariantModel.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptComboBox.cpp">
+      <Filter>Source Files\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="ScheduleTableModel.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="ScheduleDelegate.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="ScheduleManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="LuaBinding.h">
@@ -128,6 +146,24 @@
     </QtMoc>
     <QtMoc Include="LuaScriptRunner.h">
       <Filter>Header Files\Helpers</Filter>
+    </QtMoc>
+    <QtMoc Include="QVariantModel.h">
+      <Filter>Header Files\Models</Filter>
+    </QtMoc>
+    <QtMoc Include="QVariantTreeNode.h">
+      <Filter>Header Files\Models</Filter>
+    </QtMoc>
+    <QtMoc Include="ScheduleDelegate.h">
+      <Filter>Header Files\Models</Filter>
+    </QtMoc>
+    <QtMoc Include="ScheduleTableModel.h">
+      <Filter>Header Files\Models</Filter>
+    </QtMoc>
+    <QtMoc Include="ScheduleManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </QtMoc>
+    <QtMoc Include="ScriptComboBox.h">
+      <Filter>Header Files\Widgets</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

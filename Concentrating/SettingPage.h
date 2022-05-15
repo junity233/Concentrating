@@ -1,10 +1,12 @@
 #pragma once
 
 #include <QWidget>
-#include <qcheckbox.h>
 #include "ui_SettingPage.h"
 
 class SettingTableModel;
+class QVariantModel;
+class ScheduleDelegate;
+class ScheduleTableModel;
 
 class SettingPage : public QWidget
 {
@@ -23,10 +25,12 @@ public slots:
 	void resetGeneral();
 	void resetScript();
 	void resetBrowser();
+	void resetSchedule();
 
 	void submitGeneral();
 	void submitScript();
 	void submitBrowser();
+	void submitSchedule();
 
 private slots:
 	void enableAutoStart();
@@ -34,5 +38,7 @@ private slots:
 
 private:
 	Ui::SettingPage ui;
-	SettingTableModel* model;
+	QVariantModel* settingModel;
+	ScheduleTableModel* scheduleModel;
+	ScheduleDelegate* scheduleDelegate;
 };

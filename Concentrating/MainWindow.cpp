@@ -1,6 +1,4 @@
 #include "MainWindow.h"
-#include "SettingManager.h"
-#include "ScriptManager.h"
 #include <qevent.h>
 #include <qsystemtrayicon.h>
 #include <ConcerntratingBrowser.h>
@@ -11,8 +9,12 @@
 #include <qcursor.h>
 #include <qdebug.h>
 #include <qresource.h>
-#include "LuaBinding.h"
+#include <qtimer.h>
 
+#include "SettingManager.h"
+#include "ScriptManager.h"
+#include "ScheduleManager.h"
+#include "LuaBinding.h"
 #include "ProcessProtecter.h"
 #include "ProcessHelper.h"
 
@@ -26,41 +28,28 @@ MainWindow::MainWindow(QWidget *parent)
 
     setWindowIcon(QIcon(":/icon.ico"));
 
-    _browser = new ConcerntratingBrowser(this);
-    QRect rect = QApplication::desktop()->screenGeometry();
-    _browser->setGeometry(0, 0, rect.width(), rect.height());
-
-    _browser->hide();
-
-    LuaBinder::instance()->setLogCallback([this](const QString& msg) {
-        ui.logPage->log(msg, LogPage::Script);
-        });
+    setupBrowser();
 
     _instance = this;
 
     ui.setupUi(this);
 
-    connect(ui.scriptPage, &ScriptPage::scriptRunFailed, this, &MainWindow::scriptRunFailed);
-    connect(ui.scriptPage, &ScriptPage::statusBarMessage, [this](const QString& msg, int timeout) {
-        statusBar()->showMessage(msg, timeout);
-        });
-    connect(ui.scriptPage, &ScriptPage::scriptAboutToRun, this, &MainWindow::scriptAboutToRun);
-
-    connect(ui.scriptPage, &ScriptPage::scriptRunFinished, this, &MainWindow::scriptRunFinished);
-
-    LuaBinder* binder = LuaBinder::instance();
-
-    connect(binder, &LuaBinder::openBrowser,_browser,&ConcerntratingBrowser::showFullScreen);
-    connect(binder, &LuaBinder::closeBrowser, _browser, &ConcerntratingBrowser::hide);
-    connect(binder, &LuaBinder::browserLoadUrl, _browser, &ConcerntratingBrowser::load);
-
+    setupScriptPage();
+    setupLuaBinder();
+    
     connect(ui.tabWidget, &QTabWidget::currentChanged, [this](int idx) {
         if (idx == 1)
             ui.settingPage->reset(-1);
         });
 
+    connect(ScheduleManager::instance(), &ScheduleManager::runScript, ui.scriptPage, &ScriptPage::runLuaScript);
 
     setupSystemTray();
+
+    _timer = new QTimer(this);
+    _timer->setInterval(1000);
+    _timer->start();
+    connect(_timer, &QTimer::timeout, ScheduleManager::instance(), &ScheduleManager::schedule);
 
     emit initializeFinished();
 }
@@ -158,4 +147,37 @@ void MainWindow::showWindow()
 {
     if (this->isHidden())
         this->show();
+}
+
+void MainWindow::setupBrowser()
+{
+    _browser = new ConcerntratingBrowser(this);
+    QRect rect = QApplication::desktop()->screenGeometry();
+    _browser->setGeometry(0, 0, rect.width(), rect.height());
+
+    _browser->hide();
+}
+
+void MainWindow::setupScriptPage()
+{
+    connect(ui.scriptPage, &ScriptPage::scriptRunFailed, this, &MainWindow::scriptRunFailed);
+    connect(ui.scriptPage, &ScriptPage::statusBarMessage, [this](const QString& msg, int timeout) {
+        statusBar()->showMessage(msg, timeout);
+        });
+    connect(ui.scriptPage, &ScriptPage::scriptAboutToRun, this, &MainWindow::scriptAboutToRun);
+
+    connect(ui.scriptPage, &ScriptPage::scriptRunFinished, this, &MainWindow::scriptRunFinished);
+
+}
+
+void MainWindow::setupLuaBinder()
+{
+    LuaBinder* binder = LuaBinder::instance();
+
+    connect(binder, &LuaBinder::openBrowser, _browser, &ConcerntratingBrowser::showFullScreen);
+    connect(binder, &LuaBinder::closeBrowser, _browser, &ConcerntratingBrowser::hide);
+    connect(binder, &LuaBinder::browserLoadUrl, _browser, &ConcerntratingBrowser::load);
+    LuaBinder::instance()->setLogCallback([this](const QString& msg) {
+        ui.logPage->log(msg, LogPage::Script);
+        });
 }

@@ -3,6 +3,9 @@
 #include "SettingManager.h"
 #include "ScriptManager.h"
 #include "AutoStartHelper.h"
+#include "QVariantModel.h"
+#include "ScheduleDelegate.h"
+#include "ScheduleTableModel.h"
 
 SettingPage::SettingPage(QWidget *parent)
 	: QWidget(parent)
@@ -12,8 +15,22 @@ SettingPage::SettingPage(QWidget *parent)
 
 	connect(ui.tabWidget, &QTabWidget::currentChanged, this, &SettingPage::reset);
 
-	model = new SettingTableModel(this);
-	ui.scriptSettingView->setModel(model);
+	settingModel = new QVariantModel(this);
+	ui.scriptSettingView->setModel(settingModel);
+
+	scheduleDelegate = new ScheduleDelegate(this);
+	ui.scheduleView->setItemDelegate(scheduleDelegate);
+
+	scheduleModel = new ScheduleTableModel(this);
+	ui.scheduleView->setModel(scheduleModel);
+
+	connect(ui.newTask, &QPushButton::clicked, [this]() {
+		scheduleModel->insertRow(scheduleModel->rowCount(QModelIndex()) - 1, QModelIndex());
+		});
+
+	connect(ui.deleteTask, &QPushButton::clicked, [this]() {
+		scheduleModel->removeRow(ui.scheduleView->currentIndex().row(), QModelIndex());
+		});
 
 	reset();
 }
@@ -37,12 +54,17 @@ void SettingPage::submit(int idx)
 	case 2:
 		submitBrowser();
 		break;
+	case 3:
+		submitSchedule();
 	}
 }
 
 void SettingPage::newSetting()
 {
-	model->newSetting();
+	QModelIndex index = ui.scriptSettingView->currentIndex();
+
+	settingModel->insertRow(0, index);
+	ui.scriptSettingView->edit(index.child(settingModel->rowCount(index) - 1, 0));
 }
 
 void SettingPage::deleteSetting()
@@ -52,7 +74,7 @@ void SettingPage::deleteSetting()
 		return;
 
 	int row = index.row();
-	model->deleteSetting(row);
+	settingModel->removeRow(row, index);
 }
 
 void SettingPage::resetGeneral()
@@ -75,13 +97,18 @@ void SettingPage::resetGeneral()
 
 void SettingPage::resetScript()
 {
-	model->reset();
+	settingModel->setVariant(SettingManager::instance()->data());
 }
 
 void SettingPage::resetBrowser()
 {
 	auto instance = SettingManager::instance();
 	ui.browserDefaultUrl->setText(instance->value("browser.default_page_url").toString());
+}
+
+void SettingPage::resetSchedule()
+{
+	scheduleModel->reset();
 }
 
 void SettingPage::submitGeneral()
@@ -97,7 +124,7 @@ void SettingPage::submitGeneral()
 
 void SettingPage::submitScript()
 {
-	model->store();
+	SettingManager::instance()->setData(settingModel->variant().toMap());
 }
 
 void SettingPage::submitBrowser()
@@ -106,6 +133,11 @@ void SettingPage::submitBrowser()
 
 	instance->setValue("browser.default_page_url", ui.browserDefaultUrl->text());
 
+}
+
+void SettingPage::submitSchedule()
+{
+	scheduleModel->store();
 }
 
 void SettingPage::enableAutoStart()
@@ -133,6 +165,8 @@ void SettingPage::reset(int idx)
 	case 2:
 		resetBrowser();
 		break;
+	case 3:
+		resetSchedule();
 	}
 }
 
