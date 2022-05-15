@@ -9,6 +9,7 @@ LogPage::LogPage(QWidget *parent)
 
 LogPage::~LogPage()
 {
+
 }
 
 void LogPage::log(const QString& msg, Role role)
@@ -23,7 +24,7 @@ void LogPage::log(const QString& msg, Role role)
 	}
 
 	ui.logger->append(QString("<font color=\"green\">[%1]</font>  <font color=\"red\">%2</font> : %3\n")
-		.arg(QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss"))
+		.arg(QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss.zzz"))
 		.arg(roleName)
 		.arg(msg)
 	);

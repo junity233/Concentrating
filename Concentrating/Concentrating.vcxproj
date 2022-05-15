@@ -103,10 +103,13 @@
     <ClCompile Include="LuaBinding.cpp" />
     <ClCompile Include="LuaScriptRunner.cpp" />
     <ClCompile Include="MouseHelper.cpp" />
+    <ClCompile Include="MusicPlayer.cpp" />
     <ClCompile Include="ProcessHelper.cpp" />
     <ClCompile Include="ProcessProtecter.cpp" />
+    <ClCompile Include="QVariantDelegate.cpp" />
     <ClCompile Include="QVariantModel.cpp" />
     <ClCompile Include="QVariantTreeNode.cpp" />
+    <ClCompile Include="QVariantTypeComboBox.cpp" />
     <ClCompile Include="ScheduleDelegate.cpp" />
     <ClCompile Include="ScheduleManager.cpp" />
     <ClCompile Include="ScheduleTableModel.cpp" />
@@ -116,6 +119,7 @@
     <ClCompile Include="SettingManager.cpp" />
     <ClCompile Include="SettingPage.cpp" />
     <ClCompile Include="SettingTableModel.cpp" />
+    <ClCompile Include="ShutdownHelper.cpp" />
     <QtRcc Include="MainWindow.qrc">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
@@ -150,6 +154,7 @@
     <QtMoc Include="SettingPage.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ShutdownHelper.h" />
     <QtMoc Include="SettingTableModel.h" />
     <QtMoc Include="ScriptListModel.h" />
     <QtMoc Include="LogPage.h" />
@@ -158,10 +163,13 @@
     <ClInclude Include="AutoStartHelper.h" />
     <ClInclude Include="KeyboardHelper.h" />
     <ClInclude Include="MouseHelper.h" />
+    <ClInclude Include="MusicPlayer.h" />
     <ClInclude Include="ProcessHelper.h" />
     <ClInclude Include="ProcessProtecter.h" />
     <QtMoc Include="QVariantModel.h" />
     <QtMoc Include="QVariantTreeNode.h" />
+    <QtMoc Include="QVariantDelegate.h" />
+    <QtMoc Include="QVariantTypeComboBox.h" />
     <ClInclude Include="resource.h" />
     <QtMoc Include="ScriptComboBox.h" />
     <QtMoc Include="ScheduleDelegate.h" />

@@ -45,12 +45,18 @@ QVariant QVariantModel::data(const QModelIndex& index, int role) const
                 return index.row();
             else return parentPtr->mapChildKey(index.row());
         }
-        else {
+        else if(index.column()==1){
             if (item->type() == QVariantTreeNode::List)
                 return tr("[List]");
             else if (item->type() == QVariantTreeNode::Map)
                 return tr("[Map]");
             else return item->data();
+        }
+        else  if (index.column() == 2) {
+            if (role == Qt::DisplayRole)
+                return QVariant::typeToName(item->toQVariantType());
+            else
+                return (int)item->toQVariantType();
         }
     default:
         return QVariant();
@@ -65,6 +71,8 @@ QVariant QVariantModel::headerData(int section, Qt::Orientation orientation, int
                 return tr("Item");
             else if (section == 1)
                 return tr("Data");
+            else if (section == 2)
+                return tr("Type");
         }
     }
 
@@ -94,9 +102,13 @@ QModelIndex QVariantModel::parent(const QModelIndex& index) const
     if (!index.isValid())
         return QModelIndex();
     auto item = getItem(index);
+
+    if (!item)
+        return QModelIndex();
+
     auto p = item->parent();
 
-    if (p == _root)
+    if (p == _root || !p)
         return QModelIndex();
 
     return createIndex(p->childrenNumber(), 0, p);
@@ -118,7 +130,7 @@ int QVariantModel::rowCount(const QModelIndex& parent) const
 
 int QVariantModel::columnCount(const QModelIndex& parent) const
 {
-    return 2;
+    return 3;
 }
 
 Qt::ItemFlags QVariantModel::flags(const QModelIndex& index) const
@@ -126,12 +138,12 @@ Qt::ItemFlags QVariantModel::flags(const QModelIndex& index) const
     if (index.isValid()) {
         QVariantTreeNode* item = getItem(index);
 
-        if (index.column() == 1) {
-            if (item->type() != QVariantTreeNode::Variant)
+        if (index.column() == 0) {
+            if(item->parent()->type()==QVariantTreeNode::List)
                 return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
         }
-        else if (index.column() == 0) {
-            if(item->parent()->type()==QVariantTreeNode::List)
+        else if (index.column() == 1) {
+            if (item->type() != QVariantTreeNode::Variant)
                 return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
         }
     }
@@ -168,6 +180,18 @@ bool QVariantModel::setData(const QModelIndex& index, const QVariant& value, int
             else if (index.column() == 1) {
                 item->setData(value);
 
+                return true;
+            }
+            else if (index.column() == 2) {
+                auto type = (QVariant::Type)value.toInt();
+                if (type != QVariant::Map && type != QVariant::List && item->childrenCount() > 0) {
+                    beginRemoveRows(index, 0, item->childrenCount() - 1);
+                    item->changeType(type);
+                    endRemoveRows();
+                }
+                else {
+                    item->changeType(type);
+                }
                 return true;
             }
 

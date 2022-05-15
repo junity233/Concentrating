@@ -89,6 +89,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DesktopHelper.cpp" />
     <ClCompile Include="TabWidget.cpp" />
     <ClCompile Include="WebView.cpp" />
     <QtMoc Include="TabWidget.h" />
@@ -104,6 +105,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="data\qt_attribution.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DesktopHelper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

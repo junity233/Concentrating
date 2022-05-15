@@ -124,6 +124,7 @@ void ScriptPage::saveCurrentScript()
 void ScriptPage::runAutoStartScript()
 {
 	int idx = SettingManager::instance()->value("autostart.script", 0).toInt();
+	emit scriptAboutToRun(idx);
 	emit runLuaScript(idx);
 }
 

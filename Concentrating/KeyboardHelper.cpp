@@ -1,13 +1,17 @@
 #include "KeyboardHelper.h"
 #include <hook.h>
 
+bool KeyboardHelper::_isLocked = false;
+
 bool KeyboardHelper::lock()
 {
+    _isLocked = true;
     return InstallKeyboardHook();
 }
 
 bool KeyboardHelper::unlock()
 {
+    _isLocked = false;
     return UninstallKeyboardHook();
 }
 

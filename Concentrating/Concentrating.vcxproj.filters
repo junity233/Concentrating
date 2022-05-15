@@ -121,6 +121,18 @@
     <ClCompile Include="ScheduleManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="MusicPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QVariantDelegate.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="QVariantTypeComboBox.cpp">
+      <Filter>Source Files\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="ShutdownHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="LuaBinding.h">
@@ -165,6 +177,12 @@
     <QtMoc Include="ScriptComboBox.h">
       <Filter>Header Files\Widgets</Filter>
     </QtMoc>
+    <QtMoc Include="QVariantDelegate.h">
+      <Filter>Header Files\Models</Filter>
+    </QtMoc>
+    <QtMoc Include="QVariantTypeComboBox.h">
+      <Filter>Header Files\Widgets</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ScriptPage.ui">
@@ -201,6 +219,12 @@
     </ClInclude>
     <ClInclude Include="ProcessProtecter.h">
       <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="MusicPlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShutdownHelper.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

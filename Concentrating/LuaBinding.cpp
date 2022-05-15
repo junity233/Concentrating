@@ -14,6 +14,7 @@
 #include "MouseHelper.h"
 #include "KeyboardHelper.h"
 #include "ScriptManager.h"
+#include "ShutdownHelper.h"
 #include <qsystemtrayicon.h>
 
 struct lua_enum_pair {
@@ -31,8 +32,9 @@ static int lua_shutdown(lua_State* L);
 static int lua_msgbox(lua_State* L);
 static int lua_wait(lua_State* L);
 static int lua_wait_until(lua_State* L);
-static int lua_show_msg(lua_State* L);
+static int lua_message(lua_State* L);
 static int lua_run_script(lua_State* L);
+static int lua_process_event(lua_State* L);
 
 static int lua_mouse_lock(lua_State* L);
 static int lua_mouse_unlock(lua_State* L);
@@ -194,13 +196,11 @@ static int lua_wait(lua_State* L) {
 	ftime(&start);
 
 	tb = start;
-	while (tb.time * 1000 + tb.millitm < ((start.time + t) * 1000 + start.millitm)) {
+	while (tb.time * 1000 + tb.millitm < (start.time * 1000 + t + start.millitm)) {
 		QApplication::processEvents();
 		ftime(&tb);
 	}
 
-	
-	
 	return 0;
 }
 
@@ -256,7 +256,7 @@ int lua_wait_until(lua_State* L) {
 	return 0;
 }
 
-int lua_show_msg(lua_State* L)
+int lua_message(lua_State* L)
 {
 	auto systemTray = MainWindow::instance()->systemTray();
 
@@ -304,6 +304,12 @@ int lua_run_script(lua_State* L)
 
 	luaL_dostring(L, script.toStdString().c_str());
 
+	return 0;
+}
+
+int lua_process_event(lua_State* L)
+{
+	QApplication::processEvents();
 	return 0;
 }
 
@@ -430,8 +436,8 @@ int lua_exec(lua_State* L)
 
 int lua_shutdown(lua_State* L)
 {
-	system("shutdown -s -t 0");//TODO
-	return 0;
+	lua_pushboolean(L, ShutdownHelper::shutdown());
+	return 1;
 }
 
 int lua_msgbox(lua_State* L)
@@ -468,9 +474,9 @@ int lua_process_create(lua_State* L)
 
 		const char* cmdLine = lua_tostring(L, -1);
 
-		bool res = ProcessHelper::createProcess(cmdLine, Q_NULLPTR);
+		int pid = ProcessHelper::createProcess(Q_NULLPTR, cmdLine);
 
-		lua_pushboolean(L, res);
+		lua_pushinteger(L, pid);
 		return 1;
 	}
 	else {
@@ -479,9 +485,9 @@ int lua_process_create(lua_State* L)
 		const char* cmdLine = lua_tostring(L, -1);
 		const char* execPath = lua_tostring(L, -2);
 		
-		bool res = ProcessHelper::createProcess(execPath, cmdLine);
+		int pid = ProcessHelper::createProcess(execPath, cmdLine);
 
-		lua_pushboolean(L, res);
+		lua_pushinteger(L, pid);
 		return 1;
 	}
 }
@@ -749,7 +755,7 @@ static luaL_Reg concer_functions[] = {
 	{"exec",lua_exec},
 	{"shutdown",lua_shutdown},
 	{"msgbox",lua_msgbox},
-	{"show_msg",lua_show_msg},
+	{"message",lua_message},
 	{"run_script",lua_run_script},
 	{NULL,NULL}
 };

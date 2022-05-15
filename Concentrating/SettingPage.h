@@ -7,6 +7,7 @@ class SettingTableModel;
 class QVariantModel;
 class ScheduleDelegate;
 class ScheduleTableModel;
+class QVariantDelegate;
 
 class SettingPage : public QWidget
 {
@@ -39,6 +40,7 @@ private slots:
 private:
 	Ui::SettingPage ui;
 	QVariantModel* settingModel;
+	QVariantDelegate* settingDelegate;
 	ScheduleTableModel* scheduleModel;
 	ScheduleDelegate* scheduleDelegate;
 };

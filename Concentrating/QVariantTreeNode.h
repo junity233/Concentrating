@@ -46,6 +46,8 @@ public:
 	void mapRemove(const QString& name);
 	void mapInsert(const QString& name, QVariantTreeNode* child);
 
+	void changeType(QVariant::Type type);
+	QVariant::Type toQVariantType()const;
 
 private:
 	void fromMap(const QVariantMap& map);

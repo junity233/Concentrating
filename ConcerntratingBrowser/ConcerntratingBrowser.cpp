@@ -4,7 +4,9 @@
 #include <qlabel.h>
 #include <qtimer.h>
 #include <qdatetime.h>
+#include <Windows.h>
 
+#include "DesktopHelper.h"
 #include "TabWidget.h"
 
 ConcerntratingBrowser::ConcerntratingBrowser(QWidget *parent)
@@ -89,6 +91,37 @@ void ConcerntratingBrowser::urlFinishEditing()
 
 void ConcerntratingBrowser::showEvent(QShowEvent* e)
 {
-	QWidget::showEvent(e);
+	QMainWindow::showEvent(e);
 	QWindowsWindowFunctions::setHasBorderInFullScreen(this->windowHandle(), true);
+
+	_isOpened = true;
+}
+
+void ConcerntratingBrowser::closeEvent(QCloseEvent* e)
+{
+	_isOpened = false;
+	QMainWindow::closeEvent(e);
+}
+
+void ConcerntratingBrowser::focusOutEvent(QFocusEvent* e)
+{
+	if (_isOpened) {
+		showFullScreen();
+
+		DesktopHelper::Desktop inputDesk = DesktopHelper::GetCurrentDesktop(),
+			threadDesk = DesktopHelper::GetThreadDesktop();
+
+		if (inputDesk.name() != threadDesk.name()) {
+			threadDesk.switchTo();
+		}
+	}
+}
+
+bool ConcerntratingBrowser::event(QEvent* e)
+{
+	if (e->type() == QEvent::Hide) {
+		_isOpened = false;
+	}
+
+	return QMainWindow::event(e);
 }

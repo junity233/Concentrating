@@ -42,8 +42,11 @@ private:
 
     QTimer* timer;
 
-    bool _isOpened;
+    bool _isOpened = false;
 
 protected:
-    void showEvent(QShowEvent* e);
+    void showEvent(QShowEvent* e) override;
+    void closeEvent(QCloseEvent* e)override;
+    void focusOutEvent(QFocusEvent* e)override;
+    bool event(QEvent* e)override;
 };

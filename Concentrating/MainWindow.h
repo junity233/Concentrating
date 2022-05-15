@@ -37,6 +37,10 @@ private slots:
 
     void systemTrayActived(QSystemTrayIcon::ActivationReason reason);
 
+    void save();
+
+    void exit();
+
 protected:
     void closeEvent(QCloseEvent* event);
 
@@ -47,7 +51,6 @@ private:
     void setupBrowser();
     void setupScriptPage();
     void setupLuaBinder();
-
 private:
     Ui::MainWindowClass ui;
 

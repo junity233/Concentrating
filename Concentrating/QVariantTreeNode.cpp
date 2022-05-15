@@ -1,8 +1,12 @@
 #include "QVariantTreeNode.h"
+#include <qdatetime.h>
+#include <qurl.h>
 
 QVariantTreeNode::QVariantTreeNode(const QVariant& data, QVariantTreeNode* parent):
 	QObject(parent),
-	_var()
+	_var(),
+	_children(),
+	_keys()
 {
 	_parent = parent;
 	setData(data);
@@ -206,14 +210,85 @@ void QVariantTreeNode::mapInsert(const QString& name, QVariantTreeNode* child)
 	_children.append(child);
 }
 
+void QVariantTreeNode::changeType(QVariant::Type type)
+{
+	switch (type) {
+	case QVariant::Map:
+		if (_type == Map)
+			return;
+		if (_type == List) {
+			_type = Map;
+			_keys.clear();
+
+			for (int i = 0; i < _children.size(); i++)
+				_keys.append(QString::number(i + 1));
+		}
+		else fromMap(QVariantMap());
+		break;
+	case QVariant::List:
+		if (_type == List)
+			return;
+		if (_type == Map) {
+			_type = List;
+			_keys.clear();
+		}
+		else fromList({ _var });
+		break;
+	default:
+		if (_type != Variant) {
+			clear();
+			_type = Variant;
+		}
+
+		switch (type) {
+		case QVariant::Bool:
+			_var = false;
+			break;
+		case QVariant::Int:
+			_var = 0;
+			break;
+		case QVariant::String:
+			_var = QString();
+			break;
+		case QVariant::Time:
+			_var = QTime();
+			break;
+		case QVariant::DateTime:
+			_var = QDateTime();
+			break;
+		case QVariant::Date:
+			_var = QDate();
+			break;
+		case QVariant::Double:
+			_var = 0.0;
+			break;
+		case QVariant::Url:
+			_var = QUrl();
+			break;
+		default:
+			_var = QVariant();
+		}
+		
+	}
+	setDataChanged();
+}
+
+QVariant::Type QVariantTreeNode::toQVariantType() const
+{
+	if (_type == List)
+		return QVariant::List;
+	if (_type == Map)
+		return QVariant::Map;
+
+	return _var.type();
+}
+
 void QVariantTreeNode::fromMap(const QVariantMap& map)
 {
 	
 	clear();
 	_type = Map;
-	_children = QVector<QVariantTreeNode*>();
-	_keys = QVector<QString>();
-
+	
 	for (auto i : map.keys()) {
 		addMapChild(i, new QVariantTreeNode(map[i], this));
 	}
@@ -223,8 +298,6 @@ void QVariantTreeNode::fromList(const QVariantList& list)
 {
 	clear();
 	_type = List;
-
-	_children = QVector<QVariantTreeNode*>();
 
 	for (auto i : list) {
 		addListChild(new QVariantTreeNode(i, this));

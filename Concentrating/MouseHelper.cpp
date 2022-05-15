@@ -2,13 +2,17 @@
 #include <hook.h>
 #include <Windows.h>
 
+bool MouseHelper::_isLocked = false;
+
 bool MouseHelper::lock()
 {
+    _isLocked = true;
     return InstallMouseHook();
 }
 
 bool MouseHelper::unlock()
 {
+    _isLocked = false;
     return UninstallMouseHook();
 }
 

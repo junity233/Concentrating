@@ -22,6 +22,9 @@
     <ClCompile Include="ConcerntratingBrowser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DesktopHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ConcerntratingBrowser.ui" />
@@ -52,5 +55,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="data\qt_attribution.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DesktopHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

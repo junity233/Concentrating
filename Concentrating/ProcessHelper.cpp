@@ -3,21 +3,21 @@
 #include <TlHelp32.h>
 #include <qstring.h>
 
-bool ProcessHelper::createProcess(const char* execPath, const char* cmdLine)
+int ProcessHelper::createProcess(const char* execPath, const char* cmdLine)
 {
-	STARTUPINFOA si;
-	PROCESS_INFORMATION pi;
-
-	ZeroMemory(&si, sizeof(si));
-	si.cb=sizeof(si);
-	ZeroMemory(&pi, sizeof(pi));
+	STARTUPINFOA si = { 0 };
+	PROCESS_INFORMATION pi = { 0 };
+	DWORD pid;
 
 	bool res = CreateProcessA(execPath, (LPSTR)cmdLine, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
-
+	if (res)
+		pid = pi.dwProcessId;
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
 
-	return res;
+	if (res)
+		return pid;
+	return -1;
 }
 
 bool ProcessHelper::killProcess(int pid)

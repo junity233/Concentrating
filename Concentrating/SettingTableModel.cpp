@@ -119,6 +119,7 @@ bool SettingTableModel::setData(const QModelIndex& index, const QVariant& value,
 	return false;
 }
 
+
 void SettingTableModel::reset()
 {
 	beginResetModel();

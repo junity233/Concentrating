@@ -5,6 +5,7 @@
 #include "AutoStartHelper.h"
 #include "QVariantModel.h"
 #include "ScheduleDelegate.h"
+#include "QVariantDelegate.h"
 #include "ScheduleTableModel.h"
 
 SettingPage::SettingPage(QWidget *parent)
@@ -16,7 +17,9 @@ SettingPage::SettingPage(QWidget *parent)
 	connect(ui.tabWidget, &QTabWidget::currentChanged, this, &SettingPage::reset);
 
 	settingModel = new QVariantModel(this);
+	settingDelegate = new QVariantDelegate(this);
 	ui.scriptSettingView->setModel(settingModel);
+	ui.scriptSettingView->setItemDelegateForColumn(2, settingDelegate);
 
 	scheduleDelegate = new ScheduleDelegate(this);
 	ui.scheduleView->setItemDelegate(scheduleDelegate);

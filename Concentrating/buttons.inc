@@ -1,4 +1,5 @@
-lua_enum_pair msgboxType_enum[]={{"Ok",0x00000000L},
+lua_enum_pair msgboxType_enum[]={
+{"Ok",0x00000000L},
 {"Okcancel",0x00000001L},
 {"Abortretryignore",0x00000002L},
 {"Yesnocancel",0x00000003L},

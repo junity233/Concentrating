@@ -96,9 +96,7 @@ void MainWindow::systemTrayActived(QSystemTrayIcon::ActivationReason reason)
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    ScriptManager::instance()->save("scripts.json");
-    SettingManager::instance()->save("settings.json");
-
+    save();
     event->ignore();
     this->hide();
 }
@@ -118,18 +116,8 @@ void MainWindow::setupSystemTray()
         this->showWindow();
         });
 
-    connect(exitAction, &QAction::triggered, [this]() {
-        if (!ui.scriptPage->isScriptRunning())
-        {
-            if (ProcessProtecter::isProtected())
-                ProcessProtecter::unprotect();
-
-            QApplication::exit(0);
-        }
-        else {
-            QMessageBox::warning(nullptr, tr("Note"), tr("A script is still running!Exiting is banned!"));
-        }
-        });
+    connect(exitAction, &QAction::triggered, this, &MainWindow::exit);
+        
 
     _menu->addAction(showAction);
     _menu->addAction(exitAction);
@@ -180,4 +168,24 @@ void MainWindow::setupLuaBinder()
     LuaBinder::instance()->setLogCallback([this](const QString& msg) {
         ui.logPage->log(msg, LogPage::Script);
         });
+}
+
+void MainWindow::save()
+{
+    ScriptManager::instance()->save("scripts.json");
+    SettingManager::instance()->save("settings.json");
+}
+
+void MainWindow::exit()
+{
+    if (!ui.scriptPage->isScriptRunning())
+    {
+        if (ProcessProtecter::isProtected())
+            ProcessProtecter::unprotect();
+        save();
+        QApplication::exit(0);
+    }
+    else {
+        QMessageBox::warning(nullptr, tr("Note"), tr("A script is still running!Exiting is banned!"));
+    }
 }

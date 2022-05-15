@@ -1,11 +1,12 @@
 #include "LuaScriptRunner.h"
 #include <lua.hpp>
 #include "ScriptManager.h"
-
 #include "MainWindow.h"
 #include "ConcerntratingBrowser.h"
 #include "SettingManager.h"
 #include "LuaBinding.h"
+#include "MouseHelper.h"
+#include "KeyboardHelper.h"
 
 LuaScriptRunner::LuaScriptRunner(QObject *parent)
 	: QObject(parent)
@@ -57,6 +58,12 @@ void LuaScriptRunner::run(int index) {
 	running = true;
 	bool res = luaL_dostring(L, script.toStdString().c_str());
 	running = false;
+
+	if (MouseHelper::isLocked())
+		MouseHelper::unlock();
+
+	if (KeyboardHelper::isLocked())
+		KeyboardHelper::unlock();
 
 	if (res != 0) {
 		QString reason = lua_tostring(L, -1);
