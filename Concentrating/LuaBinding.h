@@ -29,6 +29,8 @@ signals:
 
 	void log(const QString& msg);
 
+	void say(const QString& text);
+
 private:
 	static LuaBinder* _instance;
 };

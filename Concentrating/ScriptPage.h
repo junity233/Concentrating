@@ -29,6 +29,7 @@ signals:
 
 public slots:
 	void runScript(int index = -1);
+	void save();
 
 private slots:
 	void newScript();
@@ -39,8 +40,10 @@ private slots:
 
 private:
 	void updateScript(int index);
-	void saveCurrentScript();
+	void saveScript(int idx);
 	void runAutoStartScript();
+
+	int currentScript()const;
 
 protected:
 	void closeEvent(QCloseEvent* event);
@@ -49,7 +52,7 @@ private:
 	Ui::ScriptPage ui;
 
 	ScriptListModel* model;
-	int currentIndex;
+	int lastIndex;
 
 	LuaScriptRunnerPool* runnerPool;
 };

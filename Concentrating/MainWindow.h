@@ -37,6 +37,7 @@ signals:
 
 private slots:
     void systemTrayActived(QSystemTrayIcon::ActivationReason reason);
+    void showWindow();
     void save();
 
     void exit();
@@ -46,10 +47,11 @@ protected:
 
 private:
     void setupSystemTray();
-    void showWindow();
 
     void setupBrowser();
     void setupLuaBinder();
+
+    bool checkPassword();
 private:
     Ui::MainWindowClass ui;
 

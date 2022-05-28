@@ -15,14 +15,16 @@ public:
 	};
 
 	explicit QVariantTreeNode(const QVariant& var, QVariantTreeNode* parent=Q_NULLPTR);
+	explicit QVariantTreeNode(Type type, QVariantTreeNode* parent = Q_NULLPTR);
+	
 	~QVariantTreeNode();
 
 	Type type()const { return _type; }
 
 	bool hasChild()const;
 
-	void addListChild(QVariantTreeNode* child);
-	void addMapChild(const QString& key, QVariantTreeNode* child);
+	int addListChild(QVariantTreeNode* child);
+	int addMapChild(const QString& key, QVariantTreeNode* child);
 
 	QVariantTreeNode* child(int index) const;
 	QVector<QVariantTreeNode*> children()const;
@@ -38,8 +40,10 @@ public:
 	void setData(const QVariant& data);
 	QVariant data()const;
 
-	bool removeRows(int pos, int count);
-	bool insertRows(int pos, int count);
+	bool remove(int pos, int count = 1);
+	bool insert(int pos, int count = 1);
+
+	bool remove(QVariantTreeNode* child);
 
 	void clear();
 
@@ -48,6 +52,10 @@ public:
 
 	void changeType(QVariant::Type type);
 	QVariant::Type toQVariantType()const;
+
+	QVariantTreeNode* copy(QVariantTreeNode* parent)const;
+
+	const QVariant& operator = (const QVariant& v) { setData(v); return v; }
 
 private:
 	void fromMap(const QVariantMap& map);
@@ -60,14 +68,14 @@ private:
 
 
 private:
-	QVariantTreeNode* _parent;
+	QVariantTreeNode* _parent = nullptr;
 	Type _type;
 
 	QVariant _var;
 	QVector<QVariantTreeNode*> _children;
 	QVector<QString> _keys;
 
-	mutable QVariant _data;
+	mutable QVariant _buf;
 	mutable bool _changed;
 protected:
 	void setDataChanged();

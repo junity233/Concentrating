@@ -1,8 +1,13 @@
 #include "TextSpeaker.h"
 #include <qtexttospeech.h>
 
-QTextToSpeech* TextSpeaker::_speaker = new QTextToSpeech;
+QTextToSpeech* TextSpeaker::_speaker = nullptr;
 
+
+void TextSpeaker::load()
+{
+	_speaker = new QTextToSpeech();
+}
 
 void TextSpeaker::say(const QString& text)
 {
@@ -22,6 +27,11 @@ void TextSpeaker::resume()
 void TextSpeaker::pause()
 {
 	_speaker->pause();
+}
+
+int TextSpeaker::state()
+{
+	return _speaker->state();
 }
 
 int TextSpeaker::volume()

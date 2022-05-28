@@ -12,9 +12,22 @@ QVariantTreeNode::QVariantTreeNode(const QVariant& data, QVariantTreeNode* paren
 	setData(data);
 }
 
+QVariantTreeNode::QVariantTreeNode(Type type, QVariantTreeNode* parent) :
+	QObject(parent),
+	_var(),
+	_children(),
+	_keys()
+{
+	_type = type;
+	_parent = parent;
+	_changed = true;
+}
+
 QVariantTreeNode::~QVariantTreeNode()
 {
-	
+	if(_type!=Variant)
+		for (auto i : _children)
+			delete i;
 }
 
 bool QVariantTreeNode::hasChild() const
@@ -22,19 +35,32 @@ bool QVariantTreeNode::hasChild() const
 	return _type != Variant;
 }
 
-void QVariantTreeNode::addListChild(QVariantTreeNode* child)
+int QVariantTreeNode::addListChild(QVariantTreeNode* child)
 {
 	if (_type == List) {
 		_children.append(child);
+		return _children.size();
 	}
+
+	return -1;
 }
 
-void QVariantTreeNode::addMapChild(const QString& key, QVariantTreeNode* child)
+int QVariantTreeNode::addMapChild(const QString& key, QVariantTreeNode* child)
 {
 	if (_type == Map) {
+		if (_keys.contains(key)) {
+			int idx = _keys.indexOf(key);
+			delete _children[idx];
+			_children[idx] = child;
+		}
+
+		setDataChanged();
 		_children.append(child);
 		_keys.append(key);
+		return _children.size();
 	}
+
+	return -1;
 }
 
 QVariantTreeNode* QVariantTreeNode::child(int index) const
@@ -87,6 +113,7 @@ bool QVariantTreeNode::mapRenameChild(int idx, const QString& name)
 		return false;
 
 	_keys[idx] = name;
+	setDataChanged();
 
 	return true;
 }
@@ -115,16 +142,18 @@ void QVariantTreeNode::setData(const QVariant& data)
 		_var = data;
 	}
 
-	_changed = true;
+	setDataChanged();
+	_buf = data;
+	_changed = false;
 }
 
 QVariant QVariantTreeNode::data() const
 {
 	if (!_changed)
-		return _data;
+		return _buf;
 
 	if (_type == Variant) {
-		_data = _var;
+		_buf = _var;
 		_changed = false;
 		return _var;
 	}
@@ -133,7 +162,7 @@ QVariant QVariantTreeNode::data() const
 	else return toList();
 }
 
-bool QVariantTreeNode::removeRows(int pos, int count)
+bool QVariantTreeNode::remove(int pos, int count)
 {
 	if (_type == Variant)
 		return false;
@@ -148,14 +177,18 @@ bool QVariantTreeNode::removeRows(int pos, int count)
 				_keys.remove(i);
 		}
 	}
+	setDataChanged();
 
 	return true;
 }
 
-bool QVariantTreeNode::insertRows(int pos, int count)
+bool QVariantTreeNode::insert(int pos, int count)
 {
 	if (_type == Variant)
 		return false;
+
+
+	setDataChanged();
 
 	if (_type == List) {
 		_children.insert(pos, count, new QVariantTreeNode(0, this));
@@ -167,6 +200,21 @@ bool QVariantTreeNode::insertRows(int pos, int count)
 	int idx = 1;
 	for (int i = 0; i < count; i++)
 		idx = mapInsertNewItem(idx);
+
+	return true;
+}
+
+bool QVariantTreeNode::remove(QVariantTreeNode* child)
+{
+	int idx = _children.indexOf(child);
+
+	if (idx < 0)
+		return false;
+
+	delete _children[idx];
+	_children.remove(idx);
+	_keys.remove(idx);
+	setDataChanged();
 
 	return true;
 }
@@ -184,6 +232,7 @@ void QVariantTreeNode::clear()
 
 	_children.clear();
 	_keys.clear();
+	setDataChanged();
 }
 
 void QVariantTreeNode::mapRemove(const QString& name)
@@ -199,6 +248,7 @@ void QVariantTreeNode::mapRemove(const QString& name)
 
 	_keys.remove(idx);
 	_children.remove(idx);
+	setDataChanged();
 }
 
 void QVariantTreeNode::mapInsert(const QString& name, QVariantTreeNode* child)
@@ -208,6 +258,7 @@ void QVariantTreeNode::mapInsert(const QString& name, QVariantTreeNode* child)
 
 	_keys.append(name);
 	_children.append(child);
+	setDataChanged();
 }
 
 void QVariantTreeNode::changeType(QVariant::Type type)
@@ -286,6 +337,12 @@ QVariant::Type QVariantTreeNode::toQVariantType() const
 	return _var.type();
 }
 
+QVariantTreeNode* QVariantTreeNode::copy(QVariantTreeNode* parent) const
+{
+	QVariantTreeNode* res = new QVariantTreeNode(data(), parent);
+	return res;
+}
+
 void QVariantTreeNode::fromMap(const QVariantMap& map)
 {
 	
@@ -295,6 +352,7 @@ void QVariantTreeNode::fromMap(const QVariantMap& map)
 	for (auto i : map.keys()) {
 		addMapChild(i, new QVariantTreeNode(map[i], this));
 	}
+	setDataChanged();
 }
 
 void QVariantTreeNode::fromList(const QVariantList& list)
@@ -305,6 +363,8 @@ void QVariantTreeNode::fromList(const QVariantList& list)
 	for (auto i : list) {
 		addListChild(new QVariantTreeNode(i, this));
 	}
+
+	setDataChanged();
 }
 
 QVariantMap QVariantTreeNode::toMap() const
@@ -317,7 +377,7 @@ QVariantMap QVariantTreeNode::toMap() const
 		res.insert(_keys[i], _children[i]->data());
 	}
 
-	_data = res;
+	_buf = res;
 	_changed = false;
 	return res;
 }
@@ -332,7 +392,7 @@ QVariantList QVariantTreeNode::toList() const
 		res.append(i->data());
 	}
 
-	_data = res;
+	_buf = res;
 	_changed = false;
 	return res;
 }
@@ -349,7 +409,7 @@ int QVariantTreeNode::mapInsertNewItem(int idx)
 void QVariantTreeNode::setDataChanged()
 {
 	_changed = true;
-	QVariantTreeNode* p = qobject_cast<QVariantTreeNode*>(parent());
+	QVariantTreeNode* p = parent();
 
 	if (p == Q_NULLPTR)
 		return;

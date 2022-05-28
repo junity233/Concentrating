@@ -9,6 +9,8 @@
 #include <qmessagebox.h>
 #include <qdatetime.h>
 #include <qsystemtrayicon.h>
+#include <qtexttospeech.h>
+#include <qdebug.h>
 
 #include "MouseHelper.h"
 #include "KeyboardHelper.h"
@@ -51,6 +53,7 @@ static int lua_speaker_set_rate(lua_State* L);
 static int lua_speaker_stop(lua_State* L);
 static int lua_speaker_pause(lua_State* L);
 static int lua_speaker_resume(lua_State* L);
+static int lua_speaker_state(lua_State* L);
 
 static int lua_mouse_lock(lua_State* L);
 static int lua_mouse_unlock(lua_State* L);
@@ -70,6 +73,8 @@ static int lua_process_kill(lua_State* L);
 
 static int lua_setting_read(lua_State* L);
 static int lua_setting_write(lua_State* L);
+static int lua_setting_remove(lua_State* L);
+static int lua_setting_exist(lua_State* L);
 
 static int lua_browser_open(lua_State* L);
 static int lua_browser_close(lua_State* L);
@@ -236,8 +241,8 @@ int lua_wait_until(lua_State* L) {
 	int hour, minite = 0, second = 0;
 
 	hour = luaL_checkinteger(L, 1);
-	minite = lua_tointeger(L, 2);
-	second = lua_tointeger(L, 3);
+	minite = luaL_optinteger(L, 2, 0);
+	second = luaL_optinteger(L, 3, 0);
 
 	tm* t = __get_time();
 
@@ -280,8 +285,8 @@ int lua_message(lua_State* L)
 {
 	auto systemTray = MainWindow::instance()->systemTray();
 
-	QString title = luaL_checkstring(L, 1);
-	QString msg = luaL_checkstring(L, 2);
+	QString msg = luaL_checkstring(L, 1);
+	QString title = luaL_optstring(L, 2, "Concentrating");
 
 	systemTray->showMessage(title, msg);
 
@@ -315,7 +320,7 @@ int lua_run_script(lua_State* L)
 		if (!has)
 			return luaL_error(L, "No such script!");
 	}
-	else return luaL_argerror(L, 1,"Need to be int or string");
+	else return luaL_argerror(L, 1, "Need to be int or string");
 
 	luaL_dostring(L, script.toStdString().c_str());
 
@@ -359,7 +364,10 @@ int lua_import(lua_State* L)
 int lua_speaker_say(lua_State* L)
 {
 	QString text = luaL_checkstring(L, 1);
-	TextSpeaker::say(text);
+	
+	//TextSpeaker::say(text);
+
+	LuaBinder::instance()->say(text);
 
 	return 0;
 }
@@ -409,6 +417,12 @@ int lua_speaker_resume(lua_State* L)
 	TextSpeaker::resume();
 
 	return 0;
+}
+
+int lua_speaker_state(lua_State* L)
+{
+	lua_pushinteger(L, TextSpeaker::state());
+	return 1;
 }
 
 int lua_keyboard_set_key_status(lua_State* L)
@@ -513,9 +527,9 @@ int lua_msgbox(lua_State* L)
 	QString msg;
 	int type;
 
-	title = luaL_checkstring(L, 1);
-	msg = luaL_checkstring(L, 2);
-	type = luaL_checkinteger(L, 3);
+	msg = luaL_checkstring(L, 1);
+	title = luaL_optstring(L, 2, "Concentraing");
+	type = luaL_optinteger(L, 3, MB_OK);
 
 	int res = MessageBoxA(NULL, msg.toLocal8Bit().constData(), title.toLocal8Bit().constData(), type);
 	lua_pushinteger(L,res);
@@ -526,7 +540,7 @@ int lua_msgbox(lua_State* L)
 int lua_process_create(lua_State* L)
 {
 	const char* execPath = luaL_checkstring(L, 1);
-	const char* cmdLine = lua_tostring(L, 2);
+	const char* cmdLine = luaL_optstring(L, 2, nullptr);
 
 	if (cmdLine == nullptr)
 		std::swap(execPath, cmdLine);
@@ -708,6 +722,24 @@ int lua_setting_write(lua_State* L)
 	return 0;
 }
 
+int lua_setting_remove(lua_State* L)
+{
+	QString key = luaL_checkstring(L, 1);
+
+	SettingManager::instance()->remove(key);
+
+	return 0;
+}
+
+int lua_setting_exist(lua_State* L)
+{
+	QString key = luaL_checkstring(L, 1);
+
+	lua_pushboolean(L, SettingManager::instance()->exist(key));
+
+	return 1;
+}
+
 int lua_browser_open(lua_State* L)
 {
 	LuaBinder::instance()->openBrowser();
@@ -821,6 +853,8 @@ static luaL_Reg browser_functions[] = {
 static luaL_Reg setting_functions[] = {
 	{"read",lua_setting_read},
 	{"write",lua_setting_write},
+	{"remove",lua_setting_remove},
+	{"exist",lua_setting_exist},
 	{NULL,NULL}
 };
 
@@ -845,6 +879,7 @@ static luaL_Reg speaker_functions[] = {
 	{"pause",lua_speaker_pause},
 	{"stop",lua_speaker_stop},
 	{"resume",lua_speaker_resume},
+	{"state",lua_speaker_state},
 	{NULL,NULL}
 };
 

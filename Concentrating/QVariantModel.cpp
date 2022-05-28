@@ -226,7 +226,7 @@ bool QVariantModel::removeRows(int row, int count, const QModelIndex& parent)
         return false;
 
     beginRemoveRows(this->parent(parent), row, row + count - 1);
-    bool res = item->parent()->removeRows(row, count);
+    bool res = item->parent()->remove(row, count);
     endRemoveRows();
 
     return res;
@@ -239,7 +239,7 @@ bool QVariantModel::insertRows(int row, int count, const QModelIndex& parent)
         return false;
 
     beginInsertRows(parent, row, row + count - 1);
-    bool res = item->insertRows(row, count);
+    bool res = item->insert(row, count);
     endInsertRows();
 
     return res;

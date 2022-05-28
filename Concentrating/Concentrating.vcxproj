@@ -64,11 +64,17 @@
     <Link>
       <AdditionalDependencies>Hook.lib;ConcerntratingBrowser.lib;LuaBinding.lib;%(AdditionalDependencies);$(Qt_LIBS_)</AdditionalDependencies>
     </Link>
+    <QtTranslation>
+      <BuildAction>lrelease</BuildAction>
+    </QtTranslation>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
       <AdditionalDependencies>Hook.lib;ConcerntratingBrowser.lib;LuaBinding.lib;%(AdditionalDependencies);$(Qt_LIBS_)</AdditionalDependencies>
     </Link>
+    <QtTranslation>
+      <BuildAction>lrelease</BuildAction>
+    </QtTranslation>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
     <ClCompile>

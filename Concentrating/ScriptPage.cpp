@@ -22,7 +22,6 @@ ScriptPage::ScriptPage(QWidget *parent)
 	: QWidget(parent)
 {
 	ui.setupUi(this);
-
 	model = new ScriptListModel(this);
 	runnerPool = new LuaScriptRunnerPool(this);
 
@@ -66,7 +65,7 @@ ScriptPage::ScriptPage(QWidget *parent)
 		runScript();
 		});
 
-	currentIndex = -1;
+	lastIndex = -1;
 	updateScript(0);
 
 }
@@ -83,6 +82,7 @@ bool ScriptPage::isScriptRunning() const
 
 void ScriptPage::newScript()
 {
+	save();
 	auto index=model->append();
 	ui.listView->edit(index);
 	updateScript(index.row());
@@ -90,6 +90,7 @@ void ScriptPage::newScript()
 
 void ScriptPage::deleteScript()
 {
+	save();
 	auto index = ui.listView->currentIndex();
 	model->remove(index);
 	updateScript(0);
@@ -97,15 +98,19 @@ void ScriptPage::deleteScript()
 
 void ScriptPage::listViewClicked(const QModelIndex& index)
 {
+	save();
 	updateScript(index.row());
 }
 
 void ScriptPage::runScript(int index)
 {
-	saveCurrentScript();
+	save();
 
 	if (index == -1)
-		index = currentIndex;
+		index = currentScript();
+
+	if (index == -1)
+		return;
 
 	ScriptManager::Script script = ScriptManager::instance()->script(index);
 	QString msg = tr(R"(Script "%1" start to run!)").arg(script.name);
@@ -131,19 +136,18 @@ void ScriptPage::updateScript(int index)
 
 	ui.codeEditor->setEnabled(true);
 
-	saveCurrentScript();
+	lastIndex = index;
 
 	QString code = ScriptManager::instance()->script(index).code;
 	ui.codeEditor->setText(code);
 
-	currentIndex = index;
 	ui.listView->setCurrentIndex(model->index(index));
 }
 
-void ScriptPage::saveCurrentScript()
+void ScriptPage::saveScript(int idx)
 {
-	if (currentIndex != -1)
-		ScriptManager::instance()->script(currentIndex).code = ui.codeEditor->toPlainText();
+	if (idx != -1)
+		ScriptManager::instance()->script(idx).code = ui.codeEditor->toPlainText();
 }
 
 void ScriptPage::runAutoStartScript()
@@ -153,9 +157,21 @@ void ScriptPage::runAutoStartScript()
 	emit runScript(idx);
 }
 
+int ScriptPage::currentScript() const
+{
+	auto idx = ui.listView->currentIndex();
+	if (idx.isValid())
+		return idx.row();
+	return -1;
+}
+
 void ScriptPage::closeEvent(QCloseEvent* event)
 {
-	saveCurrentScript();
+	save();
 	if (!runnerPool->isFinished())
 		event->ignore();
+}
+
+void ScriptPage::save() {
+	saveScript(lastIndex);
 }

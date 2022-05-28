@@ -58,9 +58,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LuaBinding.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AutoStartHelper.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
@@ -121,9 +118,6 @@
     <ClCompile Include="ScheduleManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="MusicPlayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="QVariantDelegate.cpp">
       <Filter>Source Files\Models</Filter>
     </ClCompile>
@@ -133,17 +127,23 @@
     <ClCompile Include="ShutdownHelper.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="LuaScriptRunnerPool.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MethodRunner.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="CronTime.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="LuaScriptRunnerPool.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaBinding.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="MusicPlayer.cpp">
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="TextSpeaker.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="CronTime.cpp">
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -195,11 +195,11 @@
     <QtMoc Include="QVariantTypeComboBox.h">
       <Filter>Header Files\Widgets</Filter>
     </QtMoc>
-    <QtMoc Include="LuaScriptRunnerPool.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="MethodInvoker.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Helpers</Filter>
+    </QtMoc>
+    <QtMoc Include="LuaScriptRunnerPool.h">
+      <Filter>Header Files\Helpers</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -235,23 +235,23 @@
     <ClInclude Include="ProcessProtecter.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="MusicPlayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ShutdownHelper.h">
       <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="MethodRunner.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CronTime.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MethodRunner.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="MusicPlayer.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
     <ClInclude Include="TextSpeaker.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="CronTime.h">
+      <Filter>Header Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

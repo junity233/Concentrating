@@ -10,6 +10,7 @@
 #include <qdebug.h>
 #include <qresource.h>
 #include <qtimer.h>
+#include <qinputdialog.h>
 
 #include "MusicPlayer.h"
 #include "MethodInvoker.hpp"
@@ -21,6 +22,7 @@
 #include "ProcessHelper.h"
 #include "MouseHelper.h"
 #include "KeyboardHelper.h"
+#include "TextSpeaker.h"
 
 #include "version.h"
 
@@ -29,10 +31,8 @@ MainWindow* MainWindow::_instance = Q_NULLPTR;
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
 {
-    SettingManager::instance()->load("settings.json");
+    SettingManager::instance()->load("config.dat");
     ScriptManager::instance()->load("scripts.json");
-
-    setWindowIcon(QIcon(":/icon.ico"));
 
     setupBrowser();
 
@@ -110,13 +110,10 @@ void MainWindow::setupSystemTray()
     auto showAction = new QAction(tr("Show"), this);
     auto exitAction = new QAction(tr("Exit"), this);
 
-    connect(showAction, &QAction::triggered, [this]() {
-        this->showWindow();
-        });
 
+    connect(showAction, &QAction::triggered, this, &MainWindow::showWindow);
     connect(exitAction, &QAction::triggered, this, &MainWindow::exit);
         
-
     _menu->addAction(showAction);
     _menu->addAction(exitAction);
     
@@ -131,7 +128,9 @@ void MainWindow::setupSystemTray()
 
 void MainWindow::showWindow()
 {
-    if (this->isHidden())
+    if (!checkPassword())
+        this->hide();
+    else
         this->show();
 
     this->log(tr("Window shows."),LogPage::System);
@@ -154,7 +153,7 @@ void MainWindow::setupLuaBinder()
     connect(binder, &LuaBinder::closeBrowser, _browser, &ConcerntratingBrowser::hide);
     connect(binder, &LuaBinder::browserLoadUrl, _browser, &ConcerntratingBrowser::load);
     connect(binder, &LuaBinder::log, this, [this](const QString& msg) {
-        this->log(msg, LogPage::Lua);
+        this->log(msg, LogPage::Script);
         });
 
     connect(binder, &LuaBinder::lockKeyboard, this, [this]() {
@@ -176,6 +175,25 @@ void MainWindow::setupLuaBinder()
         this->log(tr("Mouse unlocked."), LogPage::System);
         MouseHelper::unlock();
         });
+
+    connect(binder, &LuaBinder::say, this, [](const QString& text) {TextSpeaker::say(text); });
+
+    TextSpeaker::load();
+}
+
+bool MainWindow::checkPassword()
+{
+    if (SettingManager::instance()->value("system.enable_password", false).toBool() == false)
+        return true;
+    bool ok = true;
+    QString password = QInputDialog::getText(nullptr, tr("Password"), tr("Please input the password to continue:"), QLineEdit::Password, "", &ok, Qt::MSWindowsFixedSizeDialogHint);
+    if (!ok || password != SettingManager::instance()->value("system.password", "").toString()) {
+        if(ok)
+            QMessageBox::information(nullptr,tr("Notice"), tr("Password incorrect!"));
+        return false;
+    }
+
+    return true;
 }
 
 void MainWindow::statusBarMessage(const QString& msg, int timeout)
@@ -187,8 +205,9 @@ void MainWindow::statusBarMessage(const QString& msg, int timeout)
 
 void MainWindow::save()
 {
+    ui.scriptPage->save();
     ScriptManager::instance()->save("scripts.json");
-    SettingManager::instance()->save("settings.json");
+    SettingManager::instance()->save("config.dat");
 
 
     this->log(tr("Config saved."), LogPage::System);
@@ -198,10 +217,12 @@ void MainWindow::exit()
 {
     if (!ui.scriptPage->isScriptRunning())
     {
-        if (ProcessProtecter::isProtected())
-            ProcessProtecter::unprotect();
-        save();
-        QApplication::exit(0);
+        if (checkPassword()) {
+            if (ProcessProtecter::isProtected())
+                ProcessProtecter::unprotect();
+            save();
+            QApplication::exit(0);
+        }
     }
     else {
         QMessageBox::warning(nullptr, tr("Note"), tr("A script is still running!Exiting is banned!"));

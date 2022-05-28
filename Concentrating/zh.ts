@@ -12,17 +12,16 @@
 <context>
     <name>LuaScriptRunner</name>
     <message>
-        <location filename="LuaScriptRunner.cpp" line="32"/>
         <source>The specified index does not exist</source>
-        <translation>指定索引的脚本不存在！</translation>
+        <translation type="vanished">指定索引的脚本不存在！</translation>
     </message>
     <message>
-        <location filename="LuaScriptRunner.cpp" line="37"/>
+        <location filename="LuaScriptRunner.cpp" line="46"/>
         <source>A script is already running</source>
         <translation>已经有一个脚本在运行了</translation>
     </message>
     <message>
-        <location filename="LuaScriptRunner.cpp" line="43"/>
+        <location filename="LuaScriptRunner.cpp" line="51"/>
         <source>The script is null!</source>
         <translation>脚本内容为空！</translation>
     </message>
@@ -30,61 +29,129 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="MainWindow.cpp" line="61"/>
-        <location filename="MainWindow.cpp" line="71"/>
-        <location filename="MainWindow.cpp" line="81"/>
+        <location filename="MainWindow.cpp" line="187"/>
         <source>Notice</source>
         <translation>提示</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="61"/>
         <source>Script runs failed:%1</source>
-        <translation>脚本运行失败:%1</translation>
+        <translation type="vanished">脚本运行失败:%1</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="66"/>
         <source>Script runs completely,exit code:%1</source>
-        <translation>脚本运行成功，以代码%1退出。</translation>
+        <translation type="vanished">脚本运行成功，以代码%1退出。</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="71"/>
         <source>Script runs finished</source>
-        <translation>脚本运行完毕。</translation>
+        <translation type="vanished">脚本运行完毕。</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="78"/>
         <source>Script begin to run:%1</source>
-        <translation>脚本 %1 开始运行</translation>
+        <translation type="vanished">脚本 %1 开始运行</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="81"/>
         <source>Script &quot;%1&quot; is running!</source>
-        <translation>脚本 %1 正在运行</translation>
+        <translation type="vanished">脚本 %1 正在运行</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="108"/>
+        <location filename="MainWindow.cpp" line="44"/>
+        <source>Initialization begin.</source>
+        <translation>初始化开始</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="46"/>
+        <source>Setup script system.</source>
+        <translation>加载脚本系统</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="57"/>
+        <source>Setup system tray.</source>
+        <translation>加载系统托盘</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="61"/>
+        <source>Setup schedule.</source>
+        <translation>加载计划表</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="68"/>
+        <source>Setup process protection.</source>
+        <translation>加载进程保护</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="105"/>
         <source>Concerntrating</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="112"/>
+        <location filename="MainWindow.cpp" line="109"/>
         <source>Show</source>
         <translation>显示窗口</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="113"/>
+        <location filename="MainWindow.cpp" line="110"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="189"/>
+        <location filename="MainWindow.cpp" line="135"/>
+        <source>Window shows.</source>
+        <translation>显示窗口</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="159"/>
+        <source>Keyboard locked.</source>
+        <translation>键盘已上锁</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="164"/>
+        <source>Keybiard unlocked.</source>
+        <translation>键盘已解锁</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="169"/>
+        <source>Mouse locked.</source>
+        <translation>鼠标已上锁</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="174"/>
+        <source>Mouse unlocked.</source>
+        <translation>鼠标已解锁</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="184"/>
+        <source>Password</source>
+        <translation>密码</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="184"/>
+        <source>Please input the password to continue:</source>
+        <translation>请输入密码:</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="187"/>
+        <source>Password incorrect!</source>
+        <translation>密码不正确！</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="207"/>
+        <source>Config saved.</source>
+        <translation>已保存设置</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="222"/>
         <source>Note</source>
         <translation>提示</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="189"/>
+        <location filename="MainWindow.cpp" line="222"/>
         <source>A script is still running!Exiting is banned!</source>
         <translation>有脚本正在运行！退出操作被禁止！</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="223"/>
+        <source>Exiting operation refused.</source>
+        <translation>退出操作被拒绝</translation>
     </message>
 </context>
 <context>
@@ -95,37 +162,37 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="28"/>
+        <location filename="MainWindow.ui" line="32"/>
         <source>Script Page</source>
         <translation>脚本</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="33"/>
+        <location filename="MainWindow.ui" line="37"/>
         <source>Setting</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="38"/>
+        <location filename="MainWindow.ui" line="42"/>
         <source>Log</source>
         <translation>日志</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="56"/>
+        <location filename="MainWindow.ui" line="60"/>
         <source>Window</source>
         <translation>窗口</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="67"/>
+        <location filename="MainWindow.ui" line="71"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="72"/>
+        <location filename="MainWindow.ui" line="76"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="77"/>
+        <location filename="MainWindow.ui" line="81"/>
         <source>Hide</source>
         <translation>隐藏窗口</translation>
     </message>
@@ -161,8 +228,8 @@
 <context>
     <name>QVariantTreeNode</name>
     <message>
-        <location filename="QVariantTreeNode.cpp" line="342"/>
-        <location filename="QVariantTreeNode.cpp" line="345"/>
+        <location filename="QVariantTreeNode.cpp" line="402"/>
+        <location filename="QVariantTreeNode.cpp" line="405"/>
         <source>New Item(%1)</source>
         <translation>新项(%1)</translation>
     </message>
@@ -170,14 +237,19 @@
 <context>
     <name>ScheduleTableModel</name>
     <message>
-        <location filename="ScheduleTableModel.cpp" line="51"/>
+        <location filename="ScheduleTableModel.cpp" line="58"/>
         <source>Time</source>
         <translation>时间</translation>
     </message>
     <message>
-        <location filename="ScheduleTableModel.cpp" line="53"/>
+        <location filename="ScheduleTableModel.cpp" line="60"/>
         <source>Script</source>
         <translation>脚本</translation>
+    </message>
+    <message>
+        <location filename="ScheduleTableModel.cpp" line="62"/>
+        <source>Enable</source>
+        <translation>启用</translation>
     </message>
 </context>
 <context>
@@ -211,14 +283,39 @@
         <translation>运行脚本</translation>
     </message>
     <message>
-        <location filename="ScriptPage.cpp" line="91"/>
         <source>Note</source>
+        <translation type="vanished">提示</translation>
+    </message>
+    <message>
+        <source>A Script is already running</source>
+        <translation type="vanished">已经有一个脚本在运行了</translation>
+    </message>
+    <message>
+        <location filename="ScriptPage.cpp" line="45"/>
+        <source>Script &quot;%1&quot; run completely.</source>
+        <translation>脚本 &quot;%1&quot; 运行结束</translation>
+    </message>
+    <message>
+        <location filename="ScriptPage.cpp" line="47"/>
+        <source>Script &quot;%1&quot; run failed.</source>
+        <translation>脚本 &quot;%1&quot; 运行失败</translation>
+    </message>
+    <message>
+        <location filename="ScriptPage.cpp" line="53"/>
+        <location filename="ScriptPage.cpp" line="62"/>
+        <location filename="ScriptPage.cpp" line="116"/>
+        <source>Notice</source>
         <translation>提示</translation>
     </message>
     <message>
-        <location filename="ScriptPage.cpp" line="91"/>
-        <source>A Script is already running</source>
-        <translation>已经有一个脚本在运行了</translation>
+        <location filename="ScriptPage.cpp" line="62"/>
+        <source>Script &quot;%1&quot; runs failed!</source>
+        <translation>脚本 &quot;%1&quot; 运行失败</translation>
+    </message>
+    <message>
+        <location filename="ScriptPage.cpp" line="113"/>
+        <source>Script &quot;%1&quot; start to run!</source>
+        <translation>脚本 &quot;%1&quot; 开始运行</translation>
     </message>
 </context>
 <context>
@@ -267,6 +364,7 @@
         <location filename="SettingPage.ui" line="76"/>
         <location filename="SettingPage.ui" line="90"/>
         <location filename="SettingPage.ui" line="104"/>
+        <location filename="SettingPage.ui" line="127"/>
         <source>enable</source>
         <translation>开启</translation>
     </message>
@@ -281,51 +379,81 @@
         <translation>当脚本运行失败时:</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="128"/>
+        <location filename="SettingPage.ui" line="114"/>
+        <source>Access</source>
+        <translation>访问</translation>
+    </message>
+    <message>
+        <location filename="SettingPage.ui" line="120"/>
+        <source>Require password:</source>
+        <translation>需要密码</translation>
+    </message>
+    <message>
+        <location filename="SettingPage.ui" line="134"/>
+        <source>Password:</source>
+        <translation>密码:</translation>
+    </message>
+    <message>
+        <location filename="SettingPage.ui" line="147"/>
+        <source>Password</source>
+        <translation>密码</translation>
+    </message>
+    <message>
+        <location filename="SettingPage.ui" line="171"/>
         <source>Script</source>
         <translation>脚本</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="146"/>
-        <location filename="SettingPage.ui" line="221"/>
+        <location filename="SettingPage.ui" line="189"/>
+        <location filename="SettingPage.ui" line="264"/>
         <source>New</source>
         <translation>新建</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="153"/>
-        <location filename="SettingPage.ui" line="228"/>
+        <location filename="SettingPage.ui" line="196"/>
+        <location filename="SettingPage.ui" line="271"/>
         <source>Delete</source>
         <translation>删除</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="163"/>
+        <location filename="SettingPage.ui" line="206"/>
         <source>Browser</source>
         <translation>浏览器</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="169"/>
+        <location filename="SettingPage.ui" line="212"/>
         <source>Default values</source>
         <translation>默认值</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="177"/>
+        <location filename="SettingPage.ui" line="220"/>
         <source>Default Page Url:</source>
         <translation>默认页面:</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="206"/>
+        <location filename="SettingPage.ui" line="249"/>
         <source>Schedule</source>
         <translation>任务表</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="243"/>
+        <location filename="SettingPage.ui" line="286"/>
         <source>Submit</source>
         <translation>提交</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="250"/>
+        <location filename="SettingPage.ui" line="293"/>
         <source>Reset</source>
         <translation>重置</translation>
+    </message>
+    <message>
+        <location filename="SettingPage.cpp" line="172"/>
+        <source>New Item</source>
+        <translation>新建</translation>
+    </message>
+    <message>
+        <location filename="SettingPage.cpp" line="173"/>
+        <source>Delete Item</source>
+        <translation>删除</translation>
     </message>
 </context>
 <context>
@@ -333,18 +461,18 @@
     <message>
         <location filename="SettingTableModel.cpp" line="61"/>
         <source>Key</source>
-        <translation type="unfinished">键</translation>
+        <translation>键</translation>
     </message>
     <message>
         <location filename="SettingTableModel.cpp" line="63"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>值</translation>
     </message>
     <message>
         <location filename="SettingTableModel.cpp" line="140"/>
         <location filename="SettingTableModel.cpp" line="143"/>
         <source>New Item %1</source>
-        <translation type="unfinished"></translation>
+        <translation>新建项 %1</translation>
     </message>
 </context>
 </TS>

@@ -42,8 +42,6 @@ void LuaScriptRunner::run() {
 	lua_State* L = luaL_newstate();
 	LuaBinder::BindLua(L);
 
-	qDebug() << QString("Current thread:%1").arg((int)QThread::currentThread());
-
 	if (_running) {
 		emit failed(tr("A script is already running"));
 		return;

@@ -38,6 +38,9 @@ private slots:
 	void disableAutoStart();
 
 private:
+	void setupMenu();
+
+private:
 	Ui::SettingPage ui;
 	QVariantModel* settingModel;
 	QVariantDelegate* settingDelegate;

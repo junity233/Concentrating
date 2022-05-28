@@ -8,6 +8,8 @@
 #include "QVariantDelegate.h"
 #include "ScheduleTableModel.h"
 
+#include <qmenu.h>
+
 SettingPage::SettingPage(QWidget *parent)
 	: QWidget(parent)
 {
@@ -34,6 +36,8 @@ SettingPage::SettingPage(QWidget *parent)
 	connect(ui.deleteTask, &QPushButton::clicked, [this]() {
 		scheduleModel->removeRow(ui.scheduleView->currentIndex().row(), QModelIndex());
 		});
+
+	setupMenu();
 
 	reset();
 }
@@ -91,7 +95,7 @@ void SettingPage::resetGeneral()
 	for (int i = 0; i < cnt; i++) {
 		ui.autoStartScript->addItem(ScriptManager::instance()->script(i).name);
 	}
-	int idx = instance->value("autostart.script", "").toInt();
+	int idx = instance->value("system.autostart.script", "").toInt();
 	if (idx >= 0 && idx < ScriptManager::instance()->scriptCount())
 		ui.autoStartScript->setCurrentText(ScriptManager::instance()->script(idx).name);
 	else ui.autoStartScript->setCurrentIndex(-1);
@@ -99,6 +103,8 @@ void SettingPage::resetGeneral()
 	ui.noticeScriptStart->setChecked(instance->value("system.notice_script_start", true).toBool());
 	ui.noticeScriptFinish->setChecked(instance->value("system.notice_script_finished", true).toBool());
 	ui.noticeScriptFailed->setChecked(instance->value("system.notice_script_failed", true).toBool());
+	ui.enablePassword->setChecked(instance->value("system.enable_password", false).toBool());
+	ui.password->setText(instance->value("system.password", QString()).toString());
 }
 
 void SettingPage::resetScript()
@@ -109,7 +115,7 @@ void SettingPage::resetScript()
 void SettingPage::resetBrowser()
 {
 	auto instance = SettingManager::instance();
-	ui.browserDefaultUrl->setText(instance->value("browser.default_page_url").toString());
+	ui.browserDefaultUrl->setText(instance->value("system.browser.default_page_url").toString());
 }
 
 void SettingPage::resetSchedule()
@@ -120,10 +126,13 @@ void SettingPage::resetSchedule()
 void SettingPage::submitGeneral()
 {
 	auto instance = SettingManager::instance();
-	instance->setValue("autostart.script", ui.autoStartScript->currentIndex() - 1);
+
+	instance->setValue("system.autostart.script", ui.autoStartScript->currentIndex() - 1);
 	instance->setValue("system.notice_script_start", ui.noticeScriptStart->isChecked());
 	instance->setValue("system.notice_script_finished", ui.noticeScriptFinish->isChecked());
 	instance->setValue("system.notice_script_failed", ui.noticeScriptFailed->isChecked());
+	instance->setValue("system.enable_password", ui.enablePassword->isChecked());
+	instance->setValue("system.password", ui.password->text());
 
 	AutoStartHelper::setAutoStartEnable(ui.enableAutoStart->isChecked());
 }
@@ -137,7 +146,7 @@ void SettingPage::submitBrowser()
 {
 	auto instance = SettingManager::instance();
 
-	instance->setValue("browser.default_page_url", ui.browserDefaultUrl->text());
+	instance->setValue("system.browser.default_page_url", ui.browserDefaultUrl->text());
 
 }
 
@@ -154,6 +163,25 @@ void SettingPage::enableAutoStart()
 void SettingPage::disableAutoStart()
 {
 	AutoStartHelper::setAutoStartEnable(false);
+}
+
+void SettingPage::setupMenu()
+{
+	QMenu* scriptMenu = new QMenu(this);
+
+	QAction* newItemAction = new QAction(tr("New Item"), this);
+	QAction* deleteItemAction = new QAction(tr("Delete Item"), this);
+
+	scriptMenu->addActions({ newItemAction,deleteItemAction });
+
+	ui.scriptSettingView->setContextMenuPolicy(Qt::CustomContextMenu);
+
+	connect(ui.scriptSettingView, &QTreeView::customContextMenuRequested, [this, scriptMenu](const QPoint& pos) {
+		scriptMenu->exec(QCursor::pos());
+		});
+
+	connect(newItemAction, &QAction::triggered, this, &SettingPage::newSetting);
+	connect(deleteItemAction, &QAction::triggered, this, &SettingPage::deleteSetting);
 }
 
 void SettingPage::reset(int idx)
