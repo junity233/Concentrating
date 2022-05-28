@@ -7,11 +7,14 @@
 #include "ProcessProtecter.h"
 #include "SettingManager.h"
 #include "AutoStartHelper.h"
+#include "LuaScriptRunnerPool.h"
+#include "LogPage.h"
 
 #include <QLuaCompleter.hpp>
 #include <QLuaHighlighter.hpp>
 #include <qthread.h>
 #include <qmessagebox.h>
+#include <qthreadpool.h>
 
 #include <lua.hpp>
 
@@ -21,12 +24,7 @@ ScriptPage::ScriptPage(QWidget *parent)
 	ui.setupUi(this);
 
 	model = new ScriptListModel(this);
-	_thread = new QThread(this);
-	runner = new LuaScriptRunner;
-
-	runner->moveToThread(_thread);
-
-	_thread->start();
+	runnerPool = new LuaScriptRunnerPool(this);
 
 	auto completer = new QLuaCompleter(ui.codeEditor);
 	auto highlighter = new QLuaHighlighter(ui.codeEditor->document());
@@ -35,16 +33,37 @@ ScriptPage::ScriptPage(QWidget *parent)
 	ui.codeEditor->setCompleter(completer);
 	ui.codeEditor->setHighlighter(highlighter);
 
-	connect(runner, &LuaScriptRunner::scriptRunFailed, this, &ScriptPage::scriptRunFailed);
-	connect(runner, &LuaScriptRunner::scriptRunFinished, [this](bool exitCode) {
-		emit scriptRunFinished(exitCode);
-		ProcessProtecter::unprotect();
-		});
-	connect(this, &ScriptPage::runLuaScript, runner, &LuaScriptRunner::run);
-
 	connect(MainWindow::instance(), &MainWindow::initializeFinished, [this]() {
 		if (AutoStartHelper::isApplicationAutoStart())
 			runAutoStartScript();
+		});
+
+	connect(runnerPool, &LuaScriptRunnerPool::finished, this, [this](const QString& name, bool exitCode) {
+		QString msg;
+
+		if (!exitCode)
+			msg = tr("Script \"%1\" run completely.").arg(name);
+		else
+			msg = tr("Script \"%1\" run failed.").arg(name);
+
+		MainWindow::instance()->log(msg, LogPage::System);
+		MainWindow::instance()->statusBarMessage(msg);
+
+		if (SettingManager::instance()->value("system.notice_script_finished", true).toBool())
+			MainWindow::instance()->systemTray()->showMessage(tr("Notice"), msg);
+
+		});
+
+	connect(runnerPool, &LuaScriptRunnerPool::failed, this, [this](const QString& name, const QString& reason) {
+		MainWindow* mainWindow = MainWindow::instance();
+		mainWindow->log(reason, LogPage::Lua);
+
+		if (SettingManager::instance()->value("system.notice_script_failed", true).toBool())
+			mainWindow->systemTray()->showMessage(tr("Notice"), tr("Script \"%1\" runs failed!").arg(name));
+		});
+
+	connect(ui.runScrupt, &QPushButton::clicked, this, [this]() {
+		runScript();
 		});
 
 	currentIndex = -1;
@@ -54,15 +73,12 @@ ScriptPage::ScriptPage(QWidget *parent)
 
 ScriptPage::~ScriptPage()
 {
-	delete runner;
 
-	_thread->quit();
-	_thread->wait();
 }
 
 bool ScriptPage::isScriptRunning() const
 {
-	return runner->isRunning();
+	return !runnerPool->isFinished();
 }
 
 void ScriptPage::newScript()
@@ -84,16 +100,24 @@ void ScriptPage::listViewClicked(const QModelIndex& index)
 	updateScript(index.row());
 }
 
-void ScriptPage::runScript()
+void ScriptPage::runScript(int index)
 {
 	saveCurrentScript();
-	if (runner->isRunning())
-		QMessageBox::information(this, tr("Note"), tr("A Script is already running"));
-	else {
-		ProcessProtecter::protect(ProcessHelper::currentPid());
-		emit scriptAboutToRun(currentIndex);
-		emit runLuaScript(currentIndex);
+
+	if (index == -1)
+		index = currentIndex;
+
+	ScriptManager::Script script = ScriptManager::instance()->script(index);
+	QString msg = tr(R"(Script "%1" start to run!)").arg(script.name);
+
+	if (SettingManager::instance()->value("system.notice_script_start", true).toBool()) {
+		MainWindow::instance()->systemTray()->showMessage(tr("Notice"), msg);
 	}
+
+	MainWindow::instance()->log(msg, LogPage::System);
+	MainWindow::instance()->statusBar()->showMessage(msg);
+
+	runnerPool->run(script.name, script.code);
 }
 
 
@@ -101,6 +125,7 @@ void ScriptPage::updateScript(int index)
 {
 	if (index >= ScriptManager::instance()->scriptCount() || index < 0) {
 		ui.codeEditor->setEnabled(false);
+		ui.codeEditor->setText("");
 		return;
 	}
 
@@ -125,12 +150,12 @@ void ScriptPage::runAutoStartScript()
 {
 	int idx = SettingManager::instance()->value("autostart.script", 0).toInt();
 	emit scriptAboutToRun(idx);
-	emit runLuaScript(idx);
+	emit runScript(idx);
 }
 
 void ScriptPage::closeEvent(QCloseEvent* event)
 {
 	saveCurrentScript();
-	if (runner->isRunning())
+	if (!runnerPool->isFinished())
 		event->ignore();
 }

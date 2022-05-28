@@ -3,6 +3,7 @@
 #include <QObject>
 
 struct lua_State;
+class QThread;
 
 class LuaScriptRunner : public QObject
 {
@@ -10,18 +11,28 @@ class LuaScriptRunner : public QObject
 
 public:
 	LuaScriptRunner(QObject* parent = Q_NULLPTR);
-	LuaScriptRunner(lua_State* L, QObject* parent = Q_NULLPTR);
 	~LuaScriptRunner();
 
-	bool isRunning()const { return running; }
+	bool isRunning()const { return _running; }
+
+	QString code()const { return _code; }
+	void setCode(const QString& code);
+
+	QThread* thread()const { return _thread; }
+	void setThread(QThread* thread);
 
 public slots:
-	void run(int index);
+	void run();
+	void run(const QString& code);
 
 signals:
-	void scriptRunFailed(const QString& reason);
-	void scriptRunFinished(bool exitCode);
+	void failed(const QString& reason);
+	void finished(bool exitCode);
 
 private:
-	bool running;
+	bool _running;
+
+	QString _code;
+
+	QThread* _thread = nullptr;
 };

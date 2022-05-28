@@ -18,27 +18,34 @@ int ScheduleTableModel::rowCount(const QModelIndex& index) const
 
 int ScheduleTableModel::columnCount(const QModelIndex& index) const
 {
-	return 2;
+	return 3;
 }
 
 QVariant ScheduleTableModel::data(const QModelIndex& index, int role) const
 {
 	if (!index.isValid())
 		return QVariant();
-	if (role == Qt::EditRole || role == Qt::DisplayRole) {
-		int row = index.row();
-		int column = index.column();
 
+	int row = index.row();
+	int column = index.column();
+
+	if (role == Qt::EditRole || role == Qt::DisplayRole) {
 		if (row < 0 || row >= _data.size())
 			return QVariant();
 
 		if (column == 0) {
-			if (role == Qt::DisplayRole)
-				return _data[row].time.toString("hh:mm:ss");
-			else return _data[row].time;
+			return _data[row].time.toString();
 		}
-		else if (column == 1)
-			return ScriptManager::instance()->script(_data[row].script).name;
+		else if (column == 1) {
+			if (row < ScriptManager::instance()->scriptCount())
+				return ScriptManager::instance()->script(_data[row].script).name;
+			else return QVariant();
+		}
+	}
+
+	if (role == Qt::CheckStateRole) {
+		if (column == 2)
+			return _data[row].enable ? Qt::Checked : Qt::Unchecked;
 	}
 
 	return QVariant();
@@ -51,6 +58,8 @@ QVariant ScheduleTableModel::headerData(int section, Qt::Orientation orientation
 			return tr("Time");
 		else if (section == 1)
 			return tr("Script");
+		else if (section == 2)
+			return tr("Enable");
 	}
 
 	return QVariant();
@@ -58,6 +67,8 @@ QVariant ScheduleTableModel::headerData(int section, Qt::Orientation orientation
 
 Qt::ItemFlags ScheduleTableModel::flags(const QModelIndex& index) const
 {
+	if (index.column() == 2)
+		return Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable;
 	return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }
 
@@ -65,20 +76,32 @@ bool ScheduleTableModel::setData(const QModelIndex& index, const QVariant& value
 {
 	if (!index.isValid())
 		return false;
-
-	if (role == Qt::EditRole) {
 		int row = index.row();
 		int colum = index.column();
+
+	if (role == Qt::EditRole) {
 
 		if (row < 0 || row >= _data.size())
 			return false;
 
 		if (colum == 0) {
-			_data[row].time = value.toTime();
-			return true;
+			auto t = CronTime::fromString(value.toString());
+			if (t.isVaild()) {
+				_data[row].time = t;
+				return true;
+			}
+			return false;
 		}
 		else if (colum == 1) {
 			_data[row].script = value.toInt();
+			return true;
+		}
+	}
+
+	if (role == Qt::CheckStateRole) {
+		if (colum == 2)
+		{
+			_data[row].enable = value.toBool();
 			return true;
 		}
 	}

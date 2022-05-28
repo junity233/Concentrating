@@ -3,6 +3,8 @@
 #include <qdatetime.h>
 #include <qobject.h>
 
+#include "CronTime.h"
+
 class LuaScriptRunner;
 
 class ScheduleManager:
@@ -14,11 +16,12 @@ public:
     static ScheduleManager* instance() { return _instance; }
 
     struct Task {
-        QTime time;
+        CronTime time;
         int script;
+        bool enable = false;
     };
 
-    void addTask(QTime time, int script);
+    void addTask(const CronTime& time, int script,bool enable);
     void removeTask(int idx);
 
     QVector<Task> const& tasks()const { return _tasks; }

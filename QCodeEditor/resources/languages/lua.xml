@@ -48,20 +48,18 @@
         <name>\#</name>
     </section>
     <section name="Class">
-      <name>Concer</name>
-      <name>mouse</name>
-      <name>keyboard</name>
-      <name>browser</name>
-      <name>setting</name>
+      <name>Concen</name>
+      <name>coroutine</name>
+      <name>io</name>
     </section>
-  <section name="Function">
-      <name>wait</name>
-      <name>wait_until</name>
-      <name>lock</name>
-      <name>unlock</name>
-      <name>write</name>
-      <name>read</name>
-      <name>open</name>
-      <name>close</name>
-  </section>
+    <section name="Function">
+      <name>pairs</name>
+      <name>ipairs</name>
+      <name>setmetatable</name>
+      <name>getmetatable</name>
+      <name>tonumber</name>
+      <name>tostring</name>
+      <name>type</name>
+      <name>print</name>
+    </section>
 </root>

@@ -11,16 +11,22 @@
 #include <qresource.h>
 #include <qtimer.h>
 
+#include "MusicPlayer.h"
+#include "MethodInvoker.hpp"
 #include "SettingManager.h"
 #include "ScriptManager.h"
 #include "ScheduleManager.h"
 #include "LuaBinding.h"
 #include "ProcessProtecter.h"
 #include "ProcessHelper.h"
+#include "MouseHelper.h"
+#include "KeyboardHelper.h"
+
+#include "version.h"
 
 MainWindow* MainWindow::_instance = Q_NULLPTR;
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
 {
     SettingManager::instance()->load("settings.json");
@@ -34,51 +40,43 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui.setupUi(this);
 
-    setupScriptPage();
+
+    this->log("Concentrating(" COMPILE_DATETIME ") [" COMPILER "] on " SYSTEM, LogPage::System);
+    this->log(tr("Initialization begin."), LogPage::System);
+
+    this->log(tr("Setup script system."), LogPage::System);
+
     setupLuaBinder();
-    
+
     connect(ui.tabWidget, &QTabWidget::currentChanged, [this](int idx) {
         if (idx == 1)
             ui.settingPage->reset(-1);
         });
 
-    connect(ScheduleManager::instance(), &ScheduleManager::runScript, ui.scriptPage, &ScriptPage::runLuaScript);
+    connect(ScheduleManager::instance(), &ScheduleManager::runScript, ui.scriptPage, &ScriptPage::runScript);
 
+    this->log(tr("Setup system tray."), LogPage::System);
     setupSystemTray();
 
+
+    this->log(tr("Setup schedule."), LogPage::System);
     _timer = new QTimer(this);
     _timer->setInterval(1000);
     _timer->start();
     connect(_timer, &QTimer::timeout, ScheduleManager::instance(), &ScheduleManager::schedule);
 
+
+    this->log(tr("Setup process protection."), LogPage::System);
+    ProcessProtecter::protect(ProcessHelper::currentPid());
+
+    MusicPlayer::setPath(QDir::current().absoluteFilePath("music"));
+
     emit initializeFinished();
 }
-
-void MainWindow::scriptRunFailed(const QString& reason) {
-    ui.logPage->log(reason,LogPage::Lua);
-
-    if (SettingManager::instance()->value("system.notice_script_failed", false).toBool())
-        _systemTray->showMessage(tr("Notice"), tr("Script runs failed:%1").arg(reason));
-}
-
-void MainWindow::scriptRunFinished(bool exitCode)
-{
-    QString msg = tr("Script runs completely,exit code:%1").arg(exitCode);
-    ui.logPage->log(msg, LogPage::System);
-    statusBar()->showMessage(msg, 3);
-
-    if (exitCode == 0 && SettingManager::instance()->value("system.notice_script_finished", false).toBool())
-        _systemTray->showMessage(tr("Notice"), tr("Script runs finished"));
-}
-
-void MainWindow::scriptAboutToRun(int idx)
-{
-    QString name = ScriptManager::instance()->script(idx).name;
-
-    ui.logPage->log(tr("Script begin to run:%1").arg(name), LogPage::System);
-
-    if (SettingManager::instance()->value("system.notice_script_start", false).toBool())
-        _systemTray->showMessage(tr("Notice"), tr("Script \"%1\" is running!").arg(name));
+void MainWindow::log(const QString& msg, LogPage::Role role) {
+    mutex.lock();
+    ui.logPage->log(msg, role);
+    mutex.unlock();
 }
 
 void MainWindow::systemTrayActived(QSystemTrayIcon::ActivationReason reason)
@@ -135,6 +133,8 @@ void MainWindow::showWindow()
 {
     if (this->isHidden())
         this->show();
+
+    this->log(tr("Window shows."),LogPage::System);
 }
 
 void MainWindow::setupBrowser()
@@ -146,18 +146,6 @@ void MainWindow::setupBrowser()
     _browser->hide();
 }
 
-void MainWindow::setupScriptPage()
-{
-    connect(ui.scriptPage, &ScriptPage::scriptRunFailed, this, &MainWindow::scriptRunFailed);
-    connect(ui.scriptPage, &ScriptPage::statusBarMessage, [this](const QString& msg, int timeout) {
-        statusBar()->showMessage(msg, timeout);
-        });
-    connect(ui.scriptPage, &ScriptPage::scriptAboutToRun, this, &MainWindow::scriptAboutToRun);
-
-    connect(ui.scriptPage, &ScriptPage::scriptRunFinished, this, &MainWindow::scriptRunFinished);
-
-}
-
 void MainWindow::setupLuaBinder()
 {
     LuaBinder* binder = LuaBinder::instance();
@@ -165,15 +153,45 @@ void MainWindow::setupLuaBinder()
     connect(binder, &LuaBinder::openBrowser, _browser, &ConcerntratingBrowser::showFullScreen);
     connect(binder, &LuaBinder::closeBrowser, _browser, &ConcerntratingBrowser::hide);
     connect(binder, &LuaBinder::browserLoadUrl, _browser, &ConcerntratingBrowser::load);
-    LuaBinder::instance()->setLogCallback([this](const QString& msg) {
-        ui.logPage->log(msg, LogPage::Script);
+    connect(binder, &LuaBinder::log, this, [this](const QString& msg) {
+        this->log(msg, LogPage::Lua);
         });
+
+    connect(binder, &LuaBinder::lockKeyboard, this, [this]() {
+        this->log(tr("Keyboard locked."), LogPage::System);
+        KeyboardHelper::lock();
+        });
+
+    connect(binder, &LuaBinder::unlockKeyboard, this, [this]() {
+        this->log(tr("Keybiard unlocked."), LogPage::System);
+        KeyboardHelper::unlock();
+        });
+
+    connect(binder, &LuaBinder::lockMouse, this, [this]() {
+        this->log(tr("Mouse locked."), LogPage::System);
+        MouseHelper::lock();
+        });
+
+    connect(binder, &LuaBinder::unlockMouse, this, [this]() {
+        this->log(tr("Mouse unlocked."), LogPage::System);
+        MouseHelper::unlock();
+        });
+}
+
+void MainWindow::statusBarMessage(const QString& msg, int timeout)
+{
+    mutex.lock();
+    statusBar()->showMessage(msg, timeout);
+    mutex.unlock();
 }
 
 void MainWindow::save()
 {
     ScriptManager::instance()->save("scripts.json");
     SettingManager::instance()->save("settings.json");
+
+
+    this->log(tr("Config saved."), LogPage::System);
 }
 
 void MainWindow::exit()
@@ -187,5 +205,6 @@ void MainWindow::exit()
     }
     else {
         QMessageBox::warning(nullptr, tr("Note"), tr("A script is still running!Exiting is banned!"));
+        this->log(tr("Exiting operation refused."), LogPage::System);
     }
 }

@@ -38,6 +38,7 @@ QLuaCompleter::QLuaCompleter(QObject *parent) :
 
     m_model = new QStringListModel(list, this);
 
+    setModel(m_model);
     setCompletionColumn(0);
     setModelSorting(QCompleter::CaseInsensitivelySortedModel);
     setCaseSensitivity(Qt::CaseSensitive);

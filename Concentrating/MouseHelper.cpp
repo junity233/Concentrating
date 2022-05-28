@@ -6,14 +6,20 @@ bool MouseHelper::_isLocked = false;
 
 bool MouseHelper::lock()
 {
-    _isLocked = true;
-    return InstallMouseHook();
+    if (!_isLocked) {
+        _isLocked = true;
+        return InstallMouseHook();
+    }
+    return true;
 }
 
 bool MouseHelper::unlock()
 {
-    _isLocked = false;
-    return UninstallMouseHook();
+    if (_isLocked) {
+        _isLocked = false;
+        return UninstallMouseHook();
+    }
+    return true;
 }
 
 QPair<int, int> MouseHelper::pos()

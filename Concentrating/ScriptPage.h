@@ -7,7 +7,8 @@ class ScriptManager;
 class ScriptListModel;
 class QMainWindow;
 class QThread;
-class LuaScriptRunner;
+class LuaScriptRunnerPool;
+class QThreadPool;
 
 struct lua_State;
 
@@ -22,20 +23,18 @@ public:
 	bool isScriptRunning()const;
 
 signals:
-	void statusBarMessage(const QString& msg, int timeout = 0);
 	void scriptRunFailed(const QString& reason);
 	void scriptRunFinished(bool exitCode);
 	void scriptAboutToRun(int idx);
 
-	void runLuaScript(int index);
+public slots:
+	void runScript(int index = -1);
 
 private slots:
 	void newScript();
 	void deleteScript();
 
 	void listViewClicked(const QModelIndex& index);
-
-	void runScript();
 	
 
 private:
@@ -52,6 +51,5 @@ private:
 	ScriptListModel* model;
 	int currentIndex;
 
-	QThread* _thread;
-	LuaScriptRunner* runner;
+	LuaScriptRunnerPool* runnerPool;
 };

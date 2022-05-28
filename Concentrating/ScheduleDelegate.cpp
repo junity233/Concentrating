@@ -1,6 +1,6 @@
 #include "ScheduleDelegate.h"
 #include "ScriptComboBox.h"
-#include <qdatetimeedit.h>
+#include <qlineedit.h>
 
 ScheduleDelegate::ScheduleDelegate(QObject *parent)
 	: QItemDelegate(parent)
@@ -17,8 +17,7 @@ QWidget* ScheduleDelegate::createEditor(QWidget* parent, const QStyleOptionViewI
 		return new ScriptComboBox(parent);
 	}
 	else if (index.column() == 0) {
-		auto editor = new QTimeEdit(parent);
-		editor->setDisplayFormat("hh:mm:ss");
+		auto editor = new QLineEdit(parent);
 		return editor;
 	}
 

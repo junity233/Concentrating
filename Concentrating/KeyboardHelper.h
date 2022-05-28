@@ -1,4 +1,9 @@
 #pragma once
+
+#include <qmutex.h>
+
+class QThread;
+
 class KeyboardHelper
 {
 public:
@@ -11,5 +16,6 @@ public:
 
 private:
 	static bool _isLocked;
+	static QMutex _mutex;
 };
 

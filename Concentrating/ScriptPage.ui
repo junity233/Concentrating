@@ -121,22 +121,6 @@
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>runScrupt</sender>
-   <signal>clicked()</signal>
-   <receiver>ScriptPage</receiver>
-   <slot>runScript()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>438</x>
-     <y>465</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>294</x>
-     <y>245</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
  <slots>
   <slot>listViewClicked(QModelIndex)</slot>

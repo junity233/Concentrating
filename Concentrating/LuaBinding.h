@@ -13,12 +13,8 @@ class LuaBinder :
 	Q_OBJECT
 	LuaBinder();
 public:
-	typedef std::function<void(const QString& msg)> LuaLogCallback;
 
 	static void  BindLua(struct lua_State* L);
-
-	void callLog(const QString& msg);
-	void setLogCallback(LuaLogCallback callback);
 
 	static LuaBinder* instance() { return _instance; }
 
@@ -26,8 +22,13 @@ signals:
 	void openBrowser();
 	void closeBrowser();
 	void browserLoadUrl(const QUrl& url);
+	void lockMouse();
+	void lockKeyboard();
+	void unlockMouse();
+	void unlockKeyboard();
+
+	void log(const QString& msg);
 
 private:
-	LuaLogCallback _logCallback;
 	static LuaBinder* _instance;
 };

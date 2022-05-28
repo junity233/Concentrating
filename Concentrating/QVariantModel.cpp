@@ -55,7 +55,7 @@ QVariant QVariantModel::data(const QModelIndex& index, int role) const
         else  if (index.column() == 2) {
             if (role == Qt::DisplayRole)
                 return QVariant::typeToName(item->toQVariantType());
-            else
+            else if(role==Qt::EditRole)
                 return (int)item->toQVariantType();
         }
     default:

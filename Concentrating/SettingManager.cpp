@@ -14,7 +14,7 @@ QVariant& SettingManager::operator[](const QString& key)
 	return _data[key];
 }
 
-QVariant& SettingManager::value(const QString& key, const QVariant defaultValue)
+QVariant& SettingManager::value(const QString& key, const QVariant& defaultValue)
 {
 	if (_data.contains(key)) {
 		return _data[key];

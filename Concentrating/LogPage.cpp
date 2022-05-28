@@ -1,5 +1,8 @@
 #include "LogPage.h"
 #include <qdatetime.h>
+#include <qdebug.h>
+
+static QMutex mutex;
 
 LogPage::LogPage(QWidget *parent)
 	: QWidget(parent)
@@ -12,7 +15,7 @@ LogPage::~LogPage()
 
 }
 
-void LogPage::log(const QString& msg, Role role)
+void LogPage::log(const QString& msg, int role)
 {
 	QString roleName;
 
@@ -23,9 +26,15 @@ void LogPage::log(const QString& msg, Role role)
 	default:roleName = "Unknown Role";
 	}
 
+	mutex.lock();
+
+	qDebug() << msg.toHtmlEscaped();
+
 	ui.logger->append(QString("<font color=\"green\">[%1]</font>  <font color=\"red\">%2</font> : %3\n")
 		.arg(QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss.zzz"))
 		.arg(roleName)
-		.arg(msg)
-	);
+		.arg(msg.toHtmlEscaped())
+		);
+
+	mutex.unlock();
 }

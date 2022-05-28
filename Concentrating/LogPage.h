@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include <qmutex.h>
 #include "ui_LogPage.h"
 
 class LogPage : public QWidget
@@ -17,8 +18,8 @@ public:
 		System,
 		Lua
 	};
-
-	void log(const QString& msg, Role role);
+public slots:
+	void log(const QString& msg, int role);
 
 private:
 	Ui::LogPage ui;

@@ -2,6 +2,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include <qsystemtrayicon.h>
+#include <qmutex.h>
 
 #include "ui_MainWindow.h"
 
@@ -27,16 +28,15 @@ public:
         return _systemTray;
     }
 
+public slots:
+    void log(const QString& msg, LogPage::Role role);
+    void statusBarMessage(const QString& msg, int timeout = 2000);
+
 signals:
     void initializeFinished();
 
 private slots:
-    void scriptRunFailed(const QString& reason);
-    void scriptRunFinished(bool exitCode);
-    void scriptAboutToRun(int idx);
-
     void systemTrayActived(QSystemTrayIcon::ActivationReason reason);
-
     void save();
 
     void exit();
@@ -49,7 +49,6 @@ private:
     void showWindow();
 
     void setupBrowser();
-    void setupScriptPage();
     void setupLuaBinder();
 private:
     Ui::MainWindowClass ui;
@@ -59,4 +58,6 @@ private:
     QMenu *_menu;
     ConcerntratingBrowser* _browser;
     static MainWindow* _instance;
+
+    QMutex mutex;
 };

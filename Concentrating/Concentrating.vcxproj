@@ -32,12 +32,12 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>5.12.12 64bit</QtInstall>
-    <QtModules>core;gui;widgets;webenginewidgets;webenginewidgets</QtModules>
+    <QtModules>core;gui;multimedia;widgets;webenginewidgets;texttospeech</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtInstall>5.12.12 64bit</QtInstall>
-    <QtModules>core;gui;widgets;webenginewidgets;</QtModules>
+    <QtModules>core;gui;multimedia;widgets;webenginewidgets;texttospeech</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
@@ -98,10 +98,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AutoStartHelper.cpp" />
+    <ClCompile Include="CronTime.cpp" />
     <ClCompile Include="KeyboardHelper.cpp" />
     <ClCompile Include="LogPage.cpp" />
     <ClCompile Include="LuaBinding.cpp" />
     <ClCompile Include="LuaScriptRunner.cpp" />
+    <ClCompile Include="LuaScriptRunnerPool.cpp">
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
+    </ClCompile>
+    <ClCompile Include="MethodRunner.cpp" />
     <ClCompile Include="MouseHelper.cpp" />
     <ClCompile Include="MusicPlayer.cpp" />
     <ClCompile Include="ProcessHelper.cpp" />
@@ -120,6 +128,7 @@
     <ClCompile Include="SettingPage.cpp" />
     <ClCompile Include="SettingTableModel.cpp" />
     <ClCompile Include="ShutdownHelper.cpp" />
+    <ClCompile Include="TextSpeaker.cpp" />
     <QtRcc Include="MainWindow.qrc">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
@@ -154,6 +163,12 @@
     <QtMoc Include="SettingPage.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="TextSpeaker.h" />
+    <ClInclude Include="version.h" />
+    <QtMoc Include="LuaScriptRunnerPool.h" />
+    <QtMoc Include="MethodInvoker.hpp" />
+    <ClInclude Include="CronTime.h" />
+    <ClInclude Include="MethodRunner.h" />
     <ClInclude Include="ShutdownHelper.h" />
     <QtMoc Include="SettingTableModel.h" />
     <QtMoc Include="ScriptListModel.h" />
@@ -170,7 +185,6 @@
     <QtMoc Include="QVariantTreeNode.h" />
     <QtMoc Include="QVariantDelegate.h" />
     <QtMoc Include="QVariantTypeComboBox.h" />
-    <ClInclude Include="resource.h" />
     <QtMoc Include="ScriptComboBox.h" />
     <QtMoc Include="ScheduleDelegate.h" />
     <QtMoc Include="ScheduleManager.h" />
@@ -184,6 +198,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtTranslation Include="zh.ts" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

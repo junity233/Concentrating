@@ -1,5 +1,8 @@
 #include "LuaScriptRunner.h"
 #include <lua.hpp>
+#include <qthread.h>
+#include <qdebug.h>
+
 #include "ScriptManager.h"
 #include "MainWindow.h"
 #include "ConcerntratingBrowser.h"
@@ -11,66 +14,56 @@
 LuaScriptRunner::LuaScriptRunner(QObject *parent)
 	: QObject(parent)
 {
-	running = false;
-}
-
-LuaScriptRunner::LuaScriptRunner(lua_State* L, QObject* parent)
-	:QObject(parent)
-{
-	running = false;
+	_running = false;
 }
 
 LuaScriptRunner::~LuaScriptRunner()
 {
 }
 
-void LuaScriptRunner::run(int index) {
+void LuaScriptRunner::setCode(const QString& code)
+{
+	_code = code;
+}
+
+void LuaScriptRunner::setThread(QThread* thread)
+{
+	_thread = thread;
+	moveToThread(_thread);
+}
+
+void LuaScriptRunner::run(const QString& code)
+{
+	setCode(code);
+	run();
+}
+
+void LuaScriptRunner::run() {
 	lua_State* L = luaL_newstate();
 	LuaBinder::BindLua(L);
 
-	if (index >= ScriptManager::instance()->scriptCount()) {
-		emit scriptRunFailed(tr("The specified index does not exist"));
+	qDebug() << QString("Current thread:%1").arg((int)QThread::currentThread());
+
+	if (_running) {
+		emit failed(tr("A script is already running"));
 		return;
 	}
 
-	if (running) {
-		emit scriptRunFailed(tr("A script is already running"));
+	if (_code.isNull()) {
+		emit failed(tr("The script is null!"));
 		return;
 	}
 
-	QString script = ScriptManager::instance()->scripts()[index].code;
-	if (script.isNull()) {
-		emit scriptRunFailed(tr("The script is null!"));
-		return;
-	}
-
-	auto browser = MainWindow::instance()->browser();
-
-	browser->resetAllowedHosts();
-	browser->resetDefaultUrl();
-
-	browser->setDefaultUrl(
-		QUrl::fromUserInput(
-			SettingManager::instance()->value("browser.default_page_url", "about:blank").toString()
-		)
-	);
-
-	running = true;
-	bool res = luaL_dostring(L, script.toStdString().c_str());
-	running = false;
-
-	if (MouseHelper::isLocked())
-		MouseHelper::unlock();
-
-	if (KeyboardHelper::isLocked())
-		KeyboardHelper::unlock();
+	_running = true;
+	bool res = luaL_dostring(L, _code.toStdString().c_str());
+	_running = false;
 
 	if (res != 0) {
 		QString reason = lua_tostring(L, -1);
-		emit scriptRunFailed(reason);
+		emit failed(reason);
 	}
 
 	lua_close(L);
 
-	emit scriptRunFinished(res);
+	emit finished(res);
 }

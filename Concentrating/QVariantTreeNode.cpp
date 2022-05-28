@@ -240,6 +240,9 @@ void QVariantTreeNode::changeType(QVariant::Type type)
 			_type = Variant;
 		}
 
+		else if (_var.type() == type)
+			return;
+
 		switch (type) {
 		case QVariant::Bool:
 			_var = false;

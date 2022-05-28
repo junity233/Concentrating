@@ -1,6 +1,8 @@
 #include "ScheduleManager.h"
 #include "SettingManager.h"
 
+#include <qdebug.h>
+
 ScheduleManager* ScheduleManager::_instance = new ScheduleManager();
 
 ScheduleManager::ScheduleManager():
@@ -9,9 +11,9 @@ ScheduleManager::ScheduleManager():
 
 }
 
-void ScheduleManager::addTask(QTime time, int script)
+void ScheduleManager::addTask(const CronTime& time, int script,bool enable)
 {
-	_tasks.append({ time,script });
+	_tasks.append({ time,script ,enable});
 }
 
 void ScheduleManager::removeTask(int idx)
@@ -34,7 +36,7 @@ void ScheduleManager::load()
 	for (auto i : data) {
 		QVariantMap task = i.toMap();
 
-		addTask(task["time"].toTime(), task["script"].toInt());
+		addTask(CronTime::fromString(task["time"].toString()), task["script"].toInt(), task["enable"].toBool());
 	}
 }
 
@@ -46,8 +48,9 @@ void ScheduleManager::store()
 
 	for (auto i:_tasks) {
 		QVariantMap task;
-		task["time"] = i.time;
+		task["time"] = i.time.toString();
 		task["script"] = i.script;
+		task["enable"] = i.enable;
 
 		data.append(task);
 	}
@@ -56,11 +59,10 @@ void ScheduleManager::store()
 }
 
 void ScheduleManager::schedule() {
-	QTime time = QTime::currentTime();
-	time.setHMS(time.hour(), time.minute(), time.second());
+	QDateTime time = QDateTime::currentDateTime();
 
 	for (auto i : _tasks) {
-		if (i.time == time) {
+		if (i.enable && i.time.check(time)) {
 			emit runScript(i.script);
 			return;
 		}

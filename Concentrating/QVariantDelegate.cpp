@@ -1,5 +1,6 @@
 #include "QVariantDelegate.h"
 #include "QVariantTypeComboBox.h"
+#include <qdebug.h>
 
 QVariantDelegate::QVariantDelegate(QObject *parent)
 	: QItemDelegate(parent)
@@ -33,7 +34,8 @@ void QVariantDelegate::setEditorData(QWidget* editor, const QModelIndex& index) 
 	QVariantTypeComboBox* combo = qobject_cast<QVariantTypeComboBox*>(editor);
 
 	if (combo) {
-		combo->setType((QVariant::Type)index.data().toInt());
+		qDebug() << index.data();
+		combo->setType((QVariant::Type)index.data(Qt::EditRole).toInt());
 	}
 	else setEditorData(editor, index);
 }

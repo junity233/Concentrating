@@ -87,11 +87,14 @@ void SettingPage::resetGeneral()
 	int cnt = ScriptManager::instance()->scriptCount();
 	ui.autoStartScript->clear();
 
+	ui.autoStartScript->addItem("(No script)");
 	for (int i = 0; i < cnt; i++) {
 		ui.autoStartScript->addItem(ScriptManager::instance()->script(i).name);
 	}
 	int idx = instance->value("autostart.script", "").toInt();
-	ui.autoStartScript->setCurrentText(ScriptManager::instance()->script(idx).name);
+	if (idx >= 0 && idx < ScriptManager::instance()->scriptCount())
+		ui.autoStartScript->setCurrentText(ScriptManager::instance()->script(idx).name);
+	else ui.autoStartScript->setCurrentIndex(-1);
 
 	ui.noticeScriptStart->setChecked(instance->value("system.notice_script_start", true).toBool());
 	ui.noticeScriptFinish->setChecked(instance->value("system.notice_script_finished", true).toBool());
@@ -117,7 +120,7 @@ void SettingPage::resetSchedule()
 void SettingPage::submitGeneral()
 {
 	auto instance = SettingManager::instance();
-	instance->setValue("autostart.script", ui.autoStartScript->currentIndex());
+	instance->setValue("autostart.script", ui.autoStartScript->currentIndex() - 1);
 	instance->setValue("system.notice_script_start", ui.noticeScriptStart->isChecked());
 	instance->setValue("system.notice_script_finished", ui.noticeScriptFinish->isChecked());
 	instance->setValue("system.notice_script_failed", ui.noticeScriptFailed->isChecked());
