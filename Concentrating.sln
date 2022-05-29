@@ -16,6 +16,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConcerntratingBrowser", "Co
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaBinding", "LuaBinding\LuaBinding.vcxproj", "{BE6A9468-E6B1-4086-876E-0E9F458EAAC9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C2C9BF4A-300C-4A37-88B2-99D359100A70}"
+	ProjectSection(SolutionItems) = preProject
+		Lua API.md = Lua API.md
+		readme.md = readme.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64

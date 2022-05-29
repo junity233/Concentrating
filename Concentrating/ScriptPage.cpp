@@ -153,8 +153,10 @@ void ScriptPage::saveScript(int idx)
 void ScriptPage::runAutoStartScript()
 {
 	int idx = SettingManager::instance()->value("autostart.script", 0).toInt();
-	emit scriptAboutToRun(idx);
-	emit runScript(idx);
+	if (idx >= 0 && idx < ScriptManager::instance()->scriptCount()) {
+		emit scriptAboutToRun(idx);
+		emit runScript(idx);
+	}
 }
 
 int ScriptPage::currentScript() const

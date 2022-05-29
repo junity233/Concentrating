@@ -186,10 +186,10 @@ bool MainWindow::checkPassword()
     if (SettingManager::instance()->value("system.enable_password", false).toBool() == false)
         return true;
     bool ok = true;
-    QString password = QInputDialog::getText(nullptr, tr("Password"), tr("Please input the password to continue:"), QLineEdit::Password, "", &ok, Qt::MSWindowsFixedSizeDialogHint);
+    QString password = QInputDialog::getText(this, tr("Password"), tr("Please input the password to continue:"), QLineEdit::Password, "", &ok, Qt::MSWindowsFixedSizeDialogHint);
     if (!ok || password != SettingManager::instance()->value("system.password", "").toString()) {
         if(ok)
-            QMessageBox::information(nullptr,tr("Notice"), tr("Password incorrect!"));
+            QMessageBox::information(this,tr("Notice"), tr("Password incorrect!"));
         return false;
     }
 

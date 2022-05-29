@@ -846,7 +846,7 @@ static luaL_Reg browser_functions[] = {
 	{"load",lua_browser_load},
 	{"set_allowed_hosts",lua_browser_set_allowed_hosts},
 	{"set_default_url",lua_browser_set_default_url},
-	{"current_url",lua_browser_get_current_url},
+	{"url",lua_browser_get_current_url},
 	{NULL,NULL}
 };
 
