@@ -1,7 +1,5 @@
 # Concentration Lua API文档
 
-[TOC]
-
 ## 一.Concen
 
 Concen包含了Concentraing的核心功能，包括禁用/启用鼠标/键盘，进程处理，打开/关闭浏览器等.Concen直接包含的函数有以下几个：
