@@ -345,7 +345,9 @@ int lua_beep(lua_State* L)
 
 int lua_import(lua_State* L)
 {
-	lua_getglobal(L, "Concen");
+	if (lua_gettop(L) < 1)
+		lua_getglobal(L, "Concen");
+	else luaL_checktype(L, 1, LUA_TTABLE);
 
 	lua_pushnil(L);
 
@@ -570,9 +572,11 @@ int lua_process_find(lua_State* L)
 
 int lua_process_kill(lua_State* L)
 {
-	int pid = luaL_checkinteger(L, 1);
-	
-	lua_pushboolean(L, ProcessHelper::killProcess(pid));
+	for (int i = 1; i <= lua_gettop(L); i++) {
+		int pid = luaL_checkinteger(L, i);
+
+		lua_pushboolean(L, ProcessHelper::killProcess(pid));
+	}
 
 	return 1;
 }
@@ -806,6 +810,14 @@ int lua_media_play(lua_State* L)
 	return 0;
 }
 
+int lua_media_play_background(lua_State* L)
+{
+	QString name = luaL_checkstring(L, 1);
+	MusicPlayer::playBackground(name);
+
+	return 0;
+}
+
 static luaL_Reg concen_functions[] = {
 	{"wait",lua_wait},
 	{"wait_until",lua_wait_until},
@@ -867,6 +879,7 @@ static luaL_Reg process_functions[] = {
 
 static luaL_Reg media_functions[] = {
 	{"play",lua_media_play},
+	{"play_background",lua_media_play_background},
 	{NULL,NULL}
 };
 
@@ -923,6 +936,10 @@ void LuaBinder::BindLua(lua_State* L)
 	lua_pushlstring(L, "speaker", 7);
 	luaL_newlib(L, speaker_functions);
 	lua_rawset(L, -3);
+
+	/*lua_pushlstring(L, "media", 5);
+	luaL_newlib(L, media_functions);
+	lua_rawset(L, -3);*/
 
 	lua_setglobal(L, "Concen");
 

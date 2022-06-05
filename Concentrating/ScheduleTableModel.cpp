@@ -37,9 +37,7 @@ QVariant ScheduleTableModel::data(const QModelIndex& index, int role) const
 			return _data[row].time.toString();
 		}
 		else if (column == 1) {
-			if (row < ScriptManager::instance()->scriptCount())
-				return ScriptManager::instance()->script(_data[row].script).name;
-			else return QVariant();
+			return _data[row].script;
 		}
 	}
 
@@ -93,7 +91,7 @@ bool ScheduleTableModel::setData(const QModelIndex& index, const QVariant& value
 			return false;
 		}
 		else if (colum == 1) {
-			_data[row].script = value.toInt();
+			_data[row].script = value.toString();
 			return true;
 		}
 	}

@@ -1,6 +1,7 @@
 #include "ScheduleManager.h"
 #include "SettingManager.h"
 
+#include <qurl.h>
 #include <qdebug.h>
 
 ScheduleManager* ScheduleManager::_instance = new ScheduleManager();
@@ -11,7 +12,7 @@ ScheduleManager::ScheduleManager():
 
 }
 
-void ScheduleManager::addTask(const CronTime& time, int script,bool enable)
+void ScheduleManager::addTask(const CronTime& time, const QString& script,bool enable)
 {
 	_tasks.append({ time,script ,enable});
 }
@@ -36,7 +37,7 @@ void ScheduleManager::load()
 	for (auto i : data) {
 		QVariantMap task = i.toMap();
 
-		addTask(CronTime::fromString(task["time"].toString()), task["script"].toInt(), task["enable"].toBool());
+		addTask(CronTime::fromString(task["time"].toString()), task["script"].toString(), task["enable"].toBool());
 	}
 }
 
@@ -63,7 +64,7 @@ void ScheduleManager::schedule() {
 
 	for (auto i : _tasks) {
 		if (i.enable && i.time.check(time)) {
-			emit runScript(i.script);
+			emit runScript(QUrl::fromLocalFile(i.script));
 			return;
 		}
 	}

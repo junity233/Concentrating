@@ -118,6 +118,7 @@
     <ClCompile Include="MethodRunner.cpp" />
     <ClCompile Include="MouseHelper.cpp" />
     <ClCompile Include="MusicPlayer.cpp" />
+    <ClCompile Include="PathEdit.cpp" />
     <ClCompile Include="ProcessHelper.cpp" />
     <ClCompile Include="ProcessProtecter.cpp" />
     <ClCompile Include="QVariantDelegate.cpp" />
@@ -140,6 +141,7 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
     </QtRcc>
     <QtUic Include="LogPage.ui" />
+    <QtUic Include="PathEdit.ui" />
     <QtUic Include="ScriptPage.ui" />
     <QtUic Include="MainWindow.ui" />
     <QtMoc Include="MainWindow.h" />
@@ -169,6 +171,7 @@
     <QtMoc Include="SettingPage.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="PathEdit.h" />
     <ClInclude Include="TextSpeaker.h" />
     <ClInclude Include="version.h" />
     <QtMoc Include="LuaScriptRunnerPool.h" />

@@ -20,17 +20,35 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QTabWidget" name="tabWidget">
+     <widget class="QTabWidget" name="pages">
       <property name="tabPosition">
        <enum>QTabWidget::North</enum>
       </property>
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="ScriptPage" name="scriptPage">
+      <widget class="QWidget" name="scriptPage">
        <attribute name="title">
-        <string>Script Page</string>
+        <string>Scripts</string>
        </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QTabWidget" name="scripts">
+          <property name="currentIndex">
+           <number>-1</number>
+          </property>
+          <property name="documentMode">
+           <bool>false</bool>
+          </property>
+          <property name="tabsClosable">
+           <bool>true</bool>
+          </property>
+          <property name="movable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="SettingPage" name="settingPage">
        <attribute name="title">
@@ -59,16 +77,60 @@
     <property name="title">
      <string>Window</string>
     </property>
-    <addaction name="actionSave"/>
+    <addaction name="actionSaveConfig"/>
     <addaction name="actionHide"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionNew"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSaveScript"/>
+    <addaction name="actionScriptSaveAll"/>
+    <addaction name="actionScriptSaveAs"/>
+    <addaction name="actionScriptClose"/>
+   </widget>
+   <addaction name="menuFile"/>
    <addaction name="menuWindow"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionSave">
+  <action name="actionSaveConfig">
    <property name="text">
     <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionHide">
+   <property name="text">
+    <string>Hide</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="text">
+    <string>New</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionSaveScript">
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionExit">
@@ -76,9 +138,25 @@
     <string>Exit</string>
    </property>
   </action>
-  <action name="actionHide">
+  <action name="actionScriptSaveAll">
    <property name="text">
-    <string>Hide</string>
+    <string>Save All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="actionScriptSaveAs">
+   <property name="text">
+    <string>Save As</string>
+   </property>
+  </action>
+  <action name="actionScriptClose">
+   <property name="text">
+    <string>Close</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
    </property>
   </action>
  </widget>
@@ -88,12 +166,6 @@
    <class>SettingPage</class>
    <extends>QWidget</extends>
    <header>SettingPage.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ScriptPage</class>
-   <extends>QWidget</extends>
-   <header>ScriptPage.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -108,10 +180,10 @@
  </resources>
  <connections>
   <connection>
-   <sender>actionSave</sender>
+   <sender>actionSaveConfig</sender>
    <signal>triggered()</signal>
    <receiver>MainWindowClass</receiver>
-   <slot>save()</slot>
+   <slot>saveConfig()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -155,9 +227,112 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>scripts</sender>
+   <signal>tabCloseRequested(int)</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>closeScript(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>449</x>
+     <y>306</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSaveScript</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>saveScript()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionNew</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>newScript()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionOpen</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>openScript()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionScriptClose</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>closeScript()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionScriptSaveAs</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>scriptSaveAs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
-  <slot>save()</slot>
+  <slot>saveConfig()</slot>
   <slot>exit()</slot>
+  <slot>closeScript(int)</slot>
+  <slot>saveScript()</slot>
+  <slot>scriptSaveAll()</slot>
+  <slot>scriptSaveAs()</slot>
+  <slot>newScript()</slot>
+  <slot>closeScript()</slot>
+  <slot>openScript()</slot>
  </slots>
 </ui>

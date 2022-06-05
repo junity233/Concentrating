@@ -10,6 +10,8 @@ class ConcerntratingBrowser;
 class QMenu;
 class QAction;
 class QTimer;
+class LuaScriptRunnerPool;
+class ScriptPage;
 
 class MainWindow : public QMainWindow
 {
@@ -32,13 +34,25 @@ public slots:
     void log(const QString& msg, LogPage::Role role);
     void statusBarMessage(const QString& msg, int timeout = 2000);
 
+    void runScript(const QString& name, const QString& code);
+    void runScript(const QUrl& path);
+
 signals:
     void initializeFinished();
 
 private slots:
     void systemTrayActived(QSystemTrayIcon::ActivationReason reason);
     void showWindow();
-    void save();
+    void saveConfig();
+
+    void saveScript();
+    void scriptSaveAll();
+    void scriptSaveAs();
+
+    void openScript();
+    void newScript();
+    void closeScript();
+    void closeScript(int idx);
 
     void exit();
 
@@ -50,8 +64,19 @@ private:
 
     void setupBrowser();
     void setupLuaBinder();
+    void setupScriptRunnerPool();
 
     bool checkPassword();
+
+    void updateTitleForScript(ScriptPage* page);
+
+    ScriptPage* currentScriptPage() const;
+    ScriptPage* scriptPage(int idx)const;
+
+    void setupScriptPage(ScriptPage* page);
+    ScriptPage* createScriptPage();
+
+
 private:
     Ui::MainWindowClass ui;
 
@@ -61,5 +86,5 @@ private:
     ConcerntratingBrowser* _browser;
     static MainWindow* _instance;
 
-    QMutex mutex;
+    LuaScriptRunnerPool* _scriptRunnerPool;
 };

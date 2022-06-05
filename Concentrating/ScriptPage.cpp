@@ -1,73 +1,36 @@
 #include "ScriptPage.h"
-#include "ScriptManager.h"
-#include "ScriptListModel.h"
-#include "MainWindow.h"
-#include "LuaScriptRunner.h"
-#include "ProcessHelper.h"
-#include "ProcessProtecter.h"
-#include "SettingManager.h"
-#include "AutoStartHelper.h"
-#include "LuaScriptRunnerPool.h"
-#include "LogPage.h"
 
 #include <QLuaCompleter.hpp>
 #include <QLuaHighlighter.hpp>
-#include <qthread.h>
 #include <qmessagebox.h>
-#include <qthreadpool.h>
+#include <qfile.h>
+#include <qfiledialog.h>
+#include <qevent.h>
 
 #include <lua.hpp>
 
 ScriptPage::ScriptPage(QWidget *parent)
-	: QWidget(parent)
+	: QWidget(parent),
+	_path(),
+	_savedCode()
 {
 	ui.setupUi(this);
-	model = new ScriptListModel(this);
-	runnerPool = new LuaScriptRunnerPool(this);
 
 	auto completer = new QLuaCompleter(ui.codeEditor);
 	auto highlighter = new QLuaHighlighter(ui.codeEditor->document());
 
-	ui.listView->setModel(model);
 	ui.codeEditor->setCompleter(completer);
 	ui.codeEditor->setHighlighter(highlighter);
 
-	connect(MainWindow::instance(), &MainWindow::initializeFinished, [this]() {
-		if (AutoStartHelper::isApplicationAutoStart())
-			runAutoStartScript();
-		});
-
-	connect(runnerPool, &LuaScriptRunnerPool::finished, this, [this](const QString& name, bool exitCode) {
-		QString msg;
-
-		if (!exitCode)
-			msg = tr("Script \"%1\" run completely.").arg(name);
-		else
-			msg = tr("Script \"%1\" run failed.").arg(name);
-
-		MainWindow::instance()->log(msg, LogPage::System);
-		MainWindow::instance()->statusBarMessage(msg);
-
-		if (SettingManager::instance()->value("system.notice_script_finished", true).toBool())
-			MainWindow::instance()->systemTray()->showMessage(tr("Notice"), msg);
-
-		});
-
-	connect(runnerPool, &LuaScriptRunnerPool::failed, this, [this](const QString& name, const QString& reason) {
-		MainWindow* mainWindow = MainWindow::instance();
-		mainWindow->log(reason, LogPage::Lua);
-
-		if (SettingManager::instance()->value("system.notice_script_failed", true).toBool())
-			mainWindow->systemTray()->showMessage(tr("Notice"), tr("Script \"%1\" runs failed!").arg(name));
-		});
-
 	connect(ui.runScrupt, &QPushButton::clicked, this, [this]() {
-		runScript();
+		if (modified())
+			save();
 		});
-
-	lastIndex = -1;
-	updateScript(0);
-
+	connect(ui.runScrupt, &QPushButton::clicked, this, &ScriptPage::run);
+	
+	connect(ui.codeEditor, &QCodeEditor::textChanged, this, [this]() {
+		emit modifyChanged(code() == this->_savedCode);
+		});
 }
 
 ScriptPage::~ScriptPage()
@@ -75,105 +38,67 @@ ScriptPage::~ScriptPage()
 
 }
 
-bool ScriptPage::isScriptRunning() const
+QString ScriptPage::code() const
 {
-	return !runnerPool->isFinished();
+	return ui.codeEditor->toPlainText();
 }
 
-void ScriptPage::newScript()
+void ScriptPage::save()
 {
-	save();
-	auto index=model->append();
-	ui.listView->edit(index);
-	updateScript(index.row());
-}
+	if (_path.isEmpty()) {
+		_path = getPath();
 
-void ScriptPage::deleteScript()
-{
-	save();
-	auto index = ui.listView->currentIndex();
-	model->remove(index);
-	updateScript(0);
-}
+		if (_path.isEmpty())
+			return;
 
-void ScriptPage::listViewClicked(const QModelIndex& index)
-{
-	save();
-	updateScript(index.row());
-}
-
-void ScriptPage::runScript(int index)
-{
-	save();
-
-	if (index == -1)
-		index = currentScript();
-
-	if (index == -1)
-		return;
-
-	ScriptManager::Script script = ScriptManager::instance()->script(index);
-	QString msg = tr(R"(Script "%1" start to run!)").arg(script.name);
-
-	if (SettingManager::instance()->value("system.notice_script_start", true).toBool()) {
-		MainWindow::instance()->systemTray()->showMessage(tr("Notice"), msg);
+		emit pathChanged(_path);
 	}
 
-	MainWindow::instance()->log(msg, LogPage::System);
-	MainWindow::instance()->statusBar()->showMessage(msg);
+	QFile f(_path.toLocalFile());
+	f.open(QIODevice::WriteOnly);
 
-	runnerPool->run(script.name, script.code);
-}
+	if (!f.isOpen()) {
+		QMessageBox::critical(
+			this,
+			tr("Error"),
+			tr("Open file %1 failed!").arg(_path.toLocalFile())
+		);
 
-
-void ScriptPage::updateScript(int index)
-{
-	if (index >= ScriptManager::instance()->scriptCount() || index < 0) {
-		ui.codeEditor->setEnabled(false);
-		ui.codeEditor->setText("");
 		return;
 	}
 
-	ui.codeEditor->setEnabled(true);
+	f.write(code().toLocal8Bit());
+	_savedCode = code();
 
-	lastIndex = index;
+	emit modifyChanged(false);
 
-	QString code = ScriptManager::instance()->script(index).code;
-	ui.codeEditor->setText(code);
-
-	ui.listView->setCurrentIndex(model->index(index));
+	f.close();
 }
 
-void ScriptPage::saveScript(int idx)
+void ScriptPage::setPath(const QUrl& path)
 {
-	if (idx != -1)
-		ScriptManager::instance()->script(idx).code = ui.codeEditor->toPlainText();
+	_path = path;
+	emit pathChanged(_path);
 }
 
-void ScriptPage::runAutoStartScript()
+void ScriptPage::saveAs()
 {
-	int idx = SettingManager::instance()->value("autostart.script", 0).toInt();
-	if (idx >= 0 && idx < ScriptManager::instance()->scriptCount()) {
-		emit scriptAboutToRun(idx);
-		emit runScript(idx);
-	}
-}
+	QUrl newPath = getPath();
 
-int ScriptPage::currentScript() const
-{
-	auto idx = ui.listView->currentIndex();
-	if (idx.isValid())
-		return idx.row();
-	return -1;
-}
+	if (newPath.isEmpty())
+		return;
 
-void ScriptPage::closeEvent(QCloseEvent* event)
-{
+	_path = newPath;
+	emit pathChanged(_path);
 	save();
-	if (!runnerPool->isFinished())
-		event->ignore();
 }
 
-void ScriptPage::save() {
-	saveScript(lastIndex);
+QUrl ScriptPage::getPath()
+{
+	return QFileDialog::getSaveFileUrl(
+		this,
+		tr("Save script..."),
+		QUrl(),
+		tr("Lua scripts (*.lua)")
+	);
 }

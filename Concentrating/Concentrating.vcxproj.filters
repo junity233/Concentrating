@@ -145,6 +145,9 @@
     <ClCompile Include="CronTime.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="PathEdit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="LuaBinding.h">
@@ -201,6 +204,9 @@
     <QtMoc Include="LuaScriptRunnerPool.h">
       <Filter>Header Files\Helpers</Filter>
     </QtMoc>
+    <QtMoc Include="PathEdit.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ScriptPage.ui">
@@ -210,6 +216,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="LogPage.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="PathEdit.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

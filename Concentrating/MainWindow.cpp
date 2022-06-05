@@ -8,16 +8,20 @@
 #include <qaction.h>
 #include <qcursor.h>
 #include <qdebug.h>
+#include <qurl.h>
 #include <qresource.h>
 #include <qtimer.h>
 #include <qinputdialog.h>
+#include <qfiledialog.h>
 
 #include "MusicPlayer.h"
 #include "MethodInvoker.hpp"
 #include "SettingManager.h"
 #include "ScriptManager.h"
+#include "ScriptPage.h"
 #include "ScheduleManager.h"
 #include "LuaBinding.h"
+#include "LuaScriptRunnerPool.h"
 #include "ProcessProtecter.h"
 #include "ProcessHelper.h"
 #include "MouseHelper.h"
@@ -31,58 +35,56 @@ MainWindow* MainWindow::_instance = Q_NULLPTR;
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
 {
-    SettingManager::instance()->load("config.dat");
-    ScriptManager::instance()->load("scripts.json");
-
-    setupBrowser();
+    SettingManager::instance()->setPath(QUrl::fromLocalFile(QDir(qApp->applicationDirPath()).absoluteFilePath("config.dat")));
+    SettingManager::instance()->load();
 
     _instance = this;
 
-    ui.setupUi(this);
+    setupBrowser();
 
+
+    ui.setupUi(this);
 
     this->log("Concentrating(" COMPILE_DATETIME ") [" COMPILER "] on " SYSTEM, LogPage::System);
     this->log(tr("Initialization begin."), LogPage::System);
-
     this->log(tr("Setup script system."), LogPage::System);
 
     setupLuaBinder();
+    setupScriptRunnerPool();
 
-    connect(ui.tabWidget, &QTabWidget::currentChanged, [this](int idx) {
+    connect(ui.pages, &QTabWidget::currentChanged, [this](int idx) {
         if (idx == 1)
             ui.settingPage->reset(-1);
         });
 
-    connect(ScheduleManager::instance(), &ScheduleManager::runScript, ui.scriptPage, &ScriptPage::runScript);
+    connect(ui.scripts, &QTabWidget::currentChanged, [this](int idx) {
+        updateTitleForScript(scriptPage(idx));
+        });
 
     this->log(tr("Setup system tray."), LogPage::System);
     setupSystemTray();
 
-
     this->log(tr("Setup schedule."), LogPage::System);
+
     _timer = new QTimer(this);
     _timer->setInterval(1000);
     _timer->start();
     connect(_timer, &QTimer::timeout, ScheduleManager::instance(), &ScheduleManager::schedule);
-
+    connect(ScheduleManager::instance(), &ScheduleManager::runScript, this, qOverload<const QUrl&>(&MainWindow::runScript));
 
     this->log(tr("Setup process protection."), LogPage::System);
     ProcessProtecter::protect(ProcessHelper::currentPid());
 
-    MusicPlayer::setPath(QDir::current().absoluteFilePath("music"));
-
     emit initializeFinished();
 }
+
 void MainWindow::log(const QString& msg, LogPage::Role role) {
-    mutex.lock();
     ui.logPage->log(msg, role);
-    mutex.unlock();
 }
 
 void MainWindow::systemTrayActived(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason) {
-    case QSystemTrayIcon::Trigger:
     case QSystemTrayIcon::DoubleClick:
         this->showWindow();
         break;
@@ -94,7 +96,7 @@ void MainWindow::systemTrayActived(QSystemTrayIcon::ActivationReason reason)
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    save();
+    saveConfig();
     event->ignore();
     this->hide();
 }
@@ -179,6 +181,37 @@ void MainWindow::setupLuaBinder()
     connect(binder, &LuaBinder::say, this, [](const QString& text) {TextSpeaker::say(text); });
 
     TextSpeaker::load();
+
+    MusicPlayer::load();
+    MusicPlayer::setPath(QDir::current().absoluteFilePath("music"));
+}
+
+void MainWindow::setupScriptRunnerPool()
+{
+    _scriptRunnerPool = new LuaScriptRunnerPool(this);
+
+    connect(_scriptRunnerPool, &LuaScriptRunnerPool::finished, this, [this](const QString& name, bool exitCode) {
+        QString msg;
+
+        if (!exitCode)
+            msg = tr("Script \"%1\" run completely.").arg(name);
+        else
+            msg = tr("Script \"%1\" run failed.").arg(name);
+
+        log(msg, LogPage::System);
+        statusBarMessage(msg);
+
+        if (SettingManager::instance()->value("system.notice_script_finished", true).toBool())
+            systemTray()->showMessage(tr("Notice"), msg);
+
+        });
+
+    connect(_scriptRunnerPool, &LuaScriptRunnerPool::failed, this, [this](const QString& name, const QString& reason) {
+        this->log(reason, LogPage::Lua);
+
+        if (SettingManager::instance()->value("system.notice_script_failed", true).toBool())
+            this->systemTray()->showMessage(tr("Notice"), tr("Script \"%1\" runs failed!").arg(name));
+        });
 }
 
 bool MainWindow::checkPassword()
@@ -196,31 +229,200 @@ bool MainWindow::checkPassword()
     return true;
 }
 
-void MainWindow::statusBarMessage(const QString& msg, int timeout)
+void MainWindow::updateTitleForScript(ScriptPage* page)
 {
-    mutex.lock();
-    statusBar()->showMessage(msg, timeout);
-    mutex.unlock();
+    if (page) {
+        QString name = (page->path().isEmpty()) ? (tr("New script")) : (page->path().fileName());
+        QString namePart = QStringLiteral("%1 %2").arg(name).arg(page->modified() ? '*' : ' ');
+
+        ui.scripts->setTabText(ui.scripts->indexOf(page), namePart);
+
+        if (page == ui.scripts->currentWidget())
+            setWindowTitle(tr("Concentrating -- ") + namePart);
+    }
+    else if (page == ui.scripts->currentWidget())
+        setWindowTitle(tr("Concentrating"));
 }
 
-void MainWindow::save()
+ScriptPage* MainWindow::currentScriptPage() const
 {
-    ui.scriptPage->save();
-    ScriptManager::instance()->save("scripts.json");
-    SettingManager::instance()->save("config.dat");
+    return qobject_cast<ScriptPage*>(ui.scripts->currentWidget());
+}
+
+ScriptPage* MainWindow::scriptPage(int idx) const
+{
+    return qobject_cast<ScriptPage*>(ui.scripts->widget(idx));
+}
+
+void MainWindow::setupScriptPage(ScriptPage* page)
+{
+    connect(page, &ScriptPage::run, this, [this, page]() {
+        runScript(page->path().fileName(), page->code());
+        });
+
+    connect(page, &ScriptPage::modifyChanged, this, [this, page](bool modified) {
+            updateTitleForScript(page);
+        });
+    connect(page, &ScriptPage::pathChanged, this, [this, page](const QUrl& url) {
+        updateTitleForScript(page);
+        });
+}
+
+ScriptPage* MainWindow::createScriptPage()
+{
+    ScriptPage* page = new ScriptPage(this);
+    setupScriptPage(page);
+
+    return page;
+}
+
+void MainWindow::statusBarMessage(const QString& msg, int timeout)
+{
+    statusBar()->showMessage(msg, timeout);
+}
+
+void MainWindow::runScript(const QString& name, const QString& code)
+{
+    QString msg = tr(R"(Script "%1" start to run!)").arg(name);
+
+    if (SettingManager::instance()->value("system.notice_script_start", true).toBool()) {
+        systemTray()->showMessage(tr("Notice"), msg);
+    }
+
+    log(msg, LogPage::System);
+    statusBar()->showMessage(msg);
+
+    _scriptRunnerPool->run(name, code);
+}
+
+void MainWindow::runScript(const QUrl& path)
+{
+    QFile f(path.toLocalFile());
+
+    f.open(QIODevice::ReadOnly);
+
+    if (!f.isOpen()) {
+        QMessageBox::critical(
+            this,
+            tr("Error"),
+            tr("Open file %1 failed!").arg(path.toLocalFile())
+        );
+
+        return;
+    }
+
+    QString code = f.readAll();
+    f.close();
+
+    runScript(path.fileName(), code);
+}
+
+void MainWindow::saveConfig()
+{
+    SettingManager::instance()->save();
 
 
     this->log(tr("Config saved."), LogPage::System);
 }
 
+void MainWindow::saveScript()
+{
+    currentScriptPage()->save();
+}
+
+void MainWindow::scriptSaveAll()
+{
+    for (int i = 0; i < ui.scripts->count(); i++) {
+        scriptPage(i)->save();
+    }
+}
+
+void MainWindow::scriptSaveAs()
+{
+    currentScriptPage()->saveAs();
+}
+
+void MainWindow::openScript()
+{
+    ScriptPage* page = createScriptPage();
+
+    QUrl path = QFileDialog::getOpenFileUrl(
+        this,
+        tr("Open Script"),
+        QUrl(),
+        tr("Lua script (*.lua)")
+    );
+
+    if (path.isEmpty())
+        return;
+
+    QFile f(path.toLocalFile());
+
+    f.open(QIODevice::ReadOnly);
+
+    if (!f.isOpen()) {
+        QMessageBox::critical(
+            this,
+            tr("Error"),
+            tr("Open script %1 failed!").arg(path.toLocalFile())
+        );
+        return;
+    }
+
+    QString code = f.readAll();
+    page->setCode(code);
+    page->setPath(path);
+
+    ui.scripts->addTab(page, path.fileName());
+
+    f.close();
+}
+
+void MainWindow::newScript()
+{
+    ScriptPage* newScriptPage = createScriptPage();
+
+    ui.scripts->addTab(newScriptPage, tr("New Script"));
+}
+
+void MainWindow::closeScript()
+{
+    closeScript(ui.scripts->currentIndex());
+}
+
+void MainWindow::closeScript(int idx)
+{
+    ScriptPage* page = scriptPage(idx);
+
+    if (page->modified()) {
+        int res = QMessageBox::question(
+            this,
+            tr("Note"),
+            tr("File doesn't saved.Do you want to continue?"),
+            QMessageBox::Yes,
+            QMessageBox::Cancel,
+            QMessageBox::Save
+        );
+
+        if (res == QMessageBox::Cancel)
+            return;
+        else if (res == QMessageBox::Save)
+            page->save();
+
+        ui.scripts->removeTab(ui.scripts->indexOf(page));
+        page->close();
+        page->deleteLater();
+    }
+}
+
 void MainWindow::exit()
 {
-    if (!ui.scriptPage->isScriptRunning())
+    if (_scriptRunnerPool->isFinished())
     {
         if (checkPassword()) {
             if (ProcessProtecter::isProtected())
                 ProcessProtecter::unprotect();
-            save();
+            saveConfig();
             QApplication::exit(0);
         }
     }

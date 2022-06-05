@@ -44,15 +44,3 @@ signals:
 private:
 	QVector<Task> _tasks;
 };
-
-class LuaScriptRunnerInvoker
-	:public QObject
-{
-	Q_OBJECT
-public:
-	LuaScriptRunnerInvoker(QObject* parent)
-		:QObject(parent) {}
-
-signals:
-	void invoke();
-};

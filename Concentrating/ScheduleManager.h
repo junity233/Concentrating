@@ -6,6 +6,7 @@
 #include "CronTime.h"
 
 class LuaScriptRunner;
+class QUrl;
 
 class ScheduleManager:
     public QObject
@@ -17,11 +18,11 @@ public:
 
     struct Task {
         CronTime time;
-        int script;
+        QString script;
         bool enable = false;
     };
 
-    void addTask(const CronTime& time, int script,bool enable);
+    void addTask(const CronTime& time, const QString& script,bool enable);
     void removeTask(int idx);
 
     QVector<Task> const& tasks()const { return _tasks; }
@@ -33,7 +34,7 @@ public slots:
     void schedule();
 
 signals:
-    void runScript(int script);
+    void runScript(const QUrl& path);
 
 private:
     static ScheduleManager* _instance;

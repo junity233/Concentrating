@@ -3,9 +3,21 @@
 #include <qurl.h>
 #include <qdir.h>
 
-QMediaPlayer* MusicPlayer::backgroundPlayer = new QMediaPlayer;
-QMediaPlayer* MusicPlayer::effectPlayer = new QMediaPlayer;
+QMediaPlayer* MusicPlayer::backgroundPlayer = nullptr;
+QMediaPlayer* MusicPlayer::effectPlayer = nullptr;
 QDir MusicPlayer::_path;
+
+void MusicPlayer::load()
+{
+	backgroundPlayer = new QMediaPlayer;
+	effectPlayer = new QMediaPlayer;
+}
+
+void MusicPlayer::free()
+{
+	backgroundPlayer->deleteLater();
+	effectPlayer->deleteLater();
+}
 
 void MusicPlayer::setPath(const QString& path)
 {

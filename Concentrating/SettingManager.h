@@ -2,9 +2,8 @@
 #include <qmap.h>
 #include <qvariant.h>
 #include <qstring.h>
+#include <qurl.h>
 #include "QVariantTreeNode.h"
-
-class QVariantTreeNode;
 
 class SettingManager
 {
@@ -16,23 +15,27 @@ public:
 	QVariant value(const QString& key, const QVariant& defaultValue = QVariant());
 	void setValue(const QString& key, const QVariant value);
 
-	QVariantMap data()const { return _data->data().toMap(); }
+	inline QVariantMap data()const { return _data->data().toMap(); }
 	void setData(const QVariantMap& data);
 
 	void remove(const QString& key);
 	bool exist(const QString& key);
 
-	bool load(const QString& file);
-	bool save(const QString& file);
+	bool load();
+	bool save();
 
-	int count()const { return _data->childrenCount(); }
+	inline int count()const { return _data->childrenCount(); }
 
-	QStringList keys()const { return _data->mapChildrenKeys(); }
+	inline QStringList keys()const { return _data->mapChildrenKeys(); }
+
+	inline QUrl path()const {return _path;};
+	inline void setPath(const QUrl& path) { _path = path; }
 
 private:
 	QVariantTreeNode* findNode(const QString& path,bool create) const;
 
 private:
+	QUrl _path;
 	QVariantTreeNode* _data = nullptr;
 
 	static SettingManager* _instance;

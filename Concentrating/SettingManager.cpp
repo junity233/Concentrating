@@ -4,6 +4,7 @@
 #include <qjsondocument.h>
 #include <qjsonobject.h>
 #include <qdatastream.h>
+#include <qurl.h>
 
 SettingManager* SettingManager::_instance = new SettingManager;
 
@@ -52,9 +53,9 @@ bool SettingManager::exist(const QString& key)
 	return findNode(key, false) != nullptr;
 }
 
-bool SettingManager::load(const QString& file)
+bool SettingManager::load()
 {
-	QFile f(file);
+	QFile f(_path.toLocalFile());
 	f.open(QIODevice::ReadOnly);
 
 	if (!f.isOpen()) {
@@ -74,9 +75,9 @@ bool SettingManager::load(const QString& file)
 	return true;
 }
 
-bool SettingManager::save(const QString& file)
+bool SettingManager::save()
 {
-	QFile f(file);
+	QFile f(_path.toLocalFile());
 	f.open(QIODevice::WriteOnly);
 
 	if (!f.isOpen())

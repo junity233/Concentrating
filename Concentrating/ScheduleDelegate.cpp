@@ -1,6 +1,6 @@
 #include "ScheduleDelegate.h"
-#include "ScriptComboBox.h"
 #include <qlineedit.h>
+#include "PathEdit.h"
 
 ScheduleDelegate::ScheduleDelegate(QObject *parent)
 	: QItemDelegate(parent)
@@ -14,7 +14,13 @@ ScheduleDelegate::~ScheduleDelegate()
 QWidget* ScheduleDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
 	if (index.column() == 1) {
-		return new ScriptComboBox(parent);
+		PathEdit* editor = new PathEdit(parent);
+
+		editor->setFilter(tr("Lua script (*.lua)"));
+		editor->setMode(PathEdit::Open);
+		editor->setTitle(tr("Select script..."));
+		
+		return editor;
 	}
 	else if (index.column() == 0) {
 		auto editor = new QLineEdit(parent);
@@ -27,9 +33,9 @@ QWidget* ScheduleDelegate::createEditor(QWidget* parent, const QStyleOptionViewI
 void ScheduleDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
 	if (index.column() == 1) {
-		ScriptComboBox* combo = qobject_cast<ScriptComboBox*>(editor);
-		if (combo) {
-			combo->setCurrentIndex(index.data().toInt());
+		PathEdit* path = qobject_cast<PathEdit*>(editor);
+		if (path) {
+			path->setPath(index.data().toString());
 		}
 		else QItemDelegate::setEditorData(editor, index);
 	}
@@ -39,9 +45,9 @@ void ScheduleDelegate::setEditorData(QWidget* editor, const QModelIndex& index) 
 void ScheduleDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
 	if (index.column() == 1) {
-		ScriptComboBox* combo = qobject_cast<ScriptComboBox*>(editor);
-		if (combo) {
-			model->setData(index, combo->currentIndex());
+		PathEdit* path = qobject_cast<PathEdit*>(editor);
+		if (path) {
+			model->setData(index, path->path());
 			return;
 		}
 	}

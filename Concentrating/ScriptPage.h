@@ -1,16 +1,10 @@
 #pragma once
 
 #include <QWidget>
+#include <qurl.h>
 #include "ui_ScriptPage.h"
 
-class ScriptManager;
-class ScriptListModel;
-class QMainWindow;
-class QThread;
-class LuaScriptRunnerPool;
-class QThreadPool;
-
-struct lua_State;
+class QCloseEvent;
 
 class ScriptPage : public QWidget
 {
@@ -20,39 +14,32 @@ public:
 	ScriptPage(QWidget *parent = Q_NULLPTR);
 	~ScriptPage();
 
-	bool isScriptRunning()const;
+	QString code()const;
+	inline void setCode(const QString& code) { ui.codeEditor->setText(code); _savedCode = code; emit modifyChanged(false); }
+
+	inline QUrl path()const {
+		return _path;
+	}
+	;
+	void setPath(const QUrl& path);
+
+	bool modified()const { return code() != _savedCode; }
 
 signals:
-	void scriptRunFailed(const QString& reason);
-	void scriptRunFinished(bool exitCode);
-	void scriptAboutToRun(int idx);
+	void run();
+	void modifyChanged(bool modified);
+	void pathChanged(const QUrl& path);
 
 public slots:
-	void runScript(int index = -1);
 	void save();
-
-private slots:
-	void newScript();
-	void deleteScript();
-
-	void listViewClicked(const QModelIndex& index);
-	
+	void saveAs();
 
 private:
-	void updateScript(int index);
-	void saveScript(int idx);
-	void runAutoStartScript();
-
-	int currentScript()const;
-
-protected:
-	void closeEvent(QCloseEvent* event);
+	QUrl getPath();
 
 private:
 	Ui::ScriptPage ui;
 
-	ScriptListModel* model;
-	int lastIndex;
-
-	LuaScriptRunnerPool* runnerPool;
+	QUrl _path;
+	QString _savedCode;
 };

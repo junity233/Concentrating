@@ -9,6 +9,7 @@
 #include "ScheduleTableModel.h"
 
 #include <qmenu.h>
+#include <qurl.h>
 
 SettingPage::SettingPage(QWidget *parent)
 	: QWidget(parent)
@@ -28,6 +29,8 @@ SettingPage::SettingPage(QWidget *parent)
 
 	scheduleModel = new ScheduleTableModel(this);
 	ui.scheduleView->setModel(scheduleModel);
+
+	ui.scheduleView->setColumnWidth(1, 500);
 
 	connect(ui.newTask, &QPushButton::clicked, [this]() {
 		scheduleModel->insertRow(scheduleModel->rowCount(QModelIndex()) - 1, QModelIndex());
@@ -89,17 +92,9 @@ void SettingPage::resetGeneral()
 	auto instance = SettingManager::instance();
 
 	int cnt = ScriptManager::instance()->scriptCount();
-	ui.autoStartScript->clear();
 
-	ui.autoStartScript->addItem("(No script)");
-	for (int i = 0; i < cnt; i++) {
-		ui.autoStartScript->addItem(ScriptManager::instance()->script(i).name);
-	}
-	int idx = instance->value("system.autostart.script", "").toInt();
-	if (idx >= 0 && idx < ScriptManager::instance()->scriptCount())
-		ui.autoStartScript->setCurrentText(ScriptManager::instance()->script(idx).name);
-	else ui.autoStartScript->setCurrentIndex(-1);
 
+	ui.autoStartScript->setPath(instance->value("system.autostart.script", QUrl()).toString());
 	ui.noticeScriptStart->setChecked(instance->value("system.notice_script_start", true).toBool());
 	ui.noticeScriptFinish->setChecked(instance->value("system.notice_script_finished", true).toBool());
 	ui.noticeScriptFailed->setChecked(instance->value("system.notice_script_failed", true).toBool());
@@ -127,7 +122,7 @@ void SettingPage::submitGeneral()
 {
 	auto instance = SettingManager::instance();
 
-	instance->setValue("system.autostart.script", ui.autoStartScript->currentIndex() - 1);
+	instance->setValue("system.autostart.script", ui.autoStartScript->path());
 	instance->setValue("system.notice_script_start", ui.noticeScriptStart->isChecked());
 	instance->setValue("system.notice_script_finished", ui.noticeScriptFinish->isChecked());
 	instance->setValue("system.notice_script_failed", ui.noticeScriptFailed->isChecked());

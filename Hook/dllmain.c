@@ -91,6 +91,8 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
     case DLL_PROCESS_DETACH:
         UnhookAPI();            //卸载时，也卸载API
+        if (GetCurrentProcessId() == protectedProcessID)
+            UninstallProcPectHook();
         break;
     }
 

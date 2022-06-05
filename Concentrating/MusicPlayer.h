@@ -7,6 +7,9 @@ class QMediaPlayer;
 class MusicPlayer
 {
 public:
+	static void load();
+	static void free();
+
 	static void setPath(const QString& path);
 	static inline QDir path() { return _path; }
 

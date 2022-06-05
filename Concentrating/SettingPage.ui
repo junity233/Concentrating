@@ -52,7 +52,7 @@
            </widget>
           </item>
           <item>
-           <widget class="ScriptComboBox" name="autoStartScript"/>
+           <widget class="PathEdit" name="autoStartScript" native="true"/>
           </item>
          </layout>
         </widget>
@@ -301,9 +301,10 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>ScriptComboBox</class>
-   <extends>QComboBox</extends>
-   <header>ScriptComboBox.h</header>
+   <class>PathEdit</class>
+   <extends>QWidget</extends>
+   <header>PathEdit.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
