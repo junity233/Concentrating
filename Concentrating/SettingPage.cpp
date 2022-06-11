@@ -98,13 +98,14 @@ void SettingPage::resetGeneral()
 
 	int cnt = ScriptManager::instance()->scriptCount();
 
-
 	ui.autoStartScript->setPath(instance->value("system.autostart.script", QUrl()).toString());
 	ui.noticeScriptStart->setChecked(instance->value("system.notice_script_start", true).toBool());
 	ui.noticeScriptFinish->setChecked(instance->value("system.notice_script_finished", true).toBool());
 	ui.noticeScriptFailed->setChecked(instance->value("system.notice_script_failed", true).toBool());
 	ui.enablePassword->setChecked(instance->value("system.enable_password", false).toBool());
 	ui.password->setText(instance->value("system.password", QString()).toString());
+
+	ui.autoStartState->setText(tr("Auto start state:%1").arg(AutoStartHelper::isAutoStartEnable() ? tr("True") : tr("False")));
 }
 
 void SettingPage::resetScript()
@@ -158,11 +159,13 @@ void SettingPage::submitSchedule()
 void SettingPage::enableAutoStart()
 {
 	AutoStartHelper::setAutoStartEnable(true);
+	ui.autoStartState->setText(tr("Auto start state:%1").arg(AutoStartHelper::isAutoStartEnable() ? tr("True") : tr("False")));
 }
 
 void SettingPage::disableAutoStart()
 {
 	AutoStartHelper::setAutoStartEnable(false);
+	ui.autoStartState->setText(tr("Auto start state:%1").arg(AutoStartHelper::isAutoStartEnable() ? tr("True") : tr("False")));
 }
 
 void SettingPage::setupMenu()

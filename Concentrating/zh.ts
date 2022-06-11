@@ -549,111 +549,116 @@
     </message>
     <message>
         <location filename="SettingPage.ui" line="40"/>
+        <source>Auto start state</source>
+        <translation>自启动状态</translation>
+    </message>
+    <message>
+        <location filename="SettingPage.ui" line="47"/>
         <source>Enable Auto Start</source>
         <translation>开启自启动</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="47"/>
+        <location filename="SettingPage.ui" line="54"/>
         <source>Disable Auto Start</source>
         <translation>关闭自启动</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="54"/>
+        <location filename="SettingPage.ui" line="61"/>
         <source>Auto start script:</source>
         <translation>自启动脚本：</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="67"/>
+        <location filename="SettingPage.ui" line="74"/>
         <source>Notices</source>
         <translation>提示</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="73"/>
+        <location filename="SettingPage.ui" line="80"/>
         <source>Script start running:</source>
         <translation>当脚本开始运行时:</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="80"/>
-        <location filename="SettingPage.ui" line="94"/>
-        <location filename="SettingPage.ui" line="108"/>
-        <location filename="SettingPage.ui" line="131"/>
+        <location filename="SettingPage.ui" line="87"/>
+        <location filename="SettingPage.ui" line="101"/>
+        <location filename="SettingPage.ui" line="115"/>
+        <location filename="SettingPage.ui" line="138"/>
         <source>enable</source>
         <translation>开启</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="87"/>
+        <location filename="SettingPage.ui" line="94"/>
         <source>Script finish running:</source>
         <translation>当脚本运行结束时:</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="101"/>
+        <location filename="SettingPage.ui" line="108"/>
         <source>Script runs failed:</source>
         <translation>当脚本运行失败时:</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="118"/>
+        <location filename="SettingPage.ui" line="125"/>
         <source>Access</source>
         <translation>访问</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="124"/>
+        <location filename="SettingPage.ui" line="131"/>
         <source>Require password:</source>
         <translation>需要密码</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="138"/>
+        <location filename="SettingPage.ui" line="145"/>
         <source>Password:</source>
         <translation>密码:</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="151"/>
+        <location filename="SettingPage.ui" line="158"/>
         <source>Password</source>
         <translation>密码</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="179"/>
+        <location filename="SettingPage.ui" line="186"/>
         <source>Script</source>
         <translation>脚本</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="197"/>
-        <location filename="SettingPage.ui" line="280"/>
+        <location filename="SettingPage.ui" line="204"/>
+        <location filename="SettingPage.ui" line="287"/>
         <source>New</source>
         <translation>新建</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="204"/>
-        <location filename="SettingPage.ui" line="287"/>
+        <location filename="SettingPage.ui" line="211"/>
+        <location filename="SettingPage.ui" line="294"/>
         <source>Delete</source>
         <translation>删除</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="218"/>
+        <location filename="SettingPage.ui" line="225"/>
         <source>Browser</source>
         <translation>浏览器</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="224"/>
+        <location filename="SettingPage.ui" line="231"/>
         <source>Default values</source>
         <translation>默认值</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="232"/>
+        <location filename="SettingPage.ui" line="239"/>
         <source>Default Page Url:</source>
         <translation>默认页面:</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="265"/>
+        <location filename="SettingPage.ui" line="272"/>
         <source>Schedule</source>
         <translation>任务表</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="302"/>
+        <location filename="SettingPage.ui" line="309"/>
         <source>Submit</source>
         <translation>提交</translation>
     </message>
     <message>
-        <location filename="SettingPage.ui" line="309"/>
+        <location filename="SettingPage.ui" line="316"/>
         <source>Reset</source>
         <translation>重置</translation>
     </message>
@@ -668,12 +673,33 @@
         <translation>打开脚本</translation>
     </message>
     <message>
-        <location filename="SettingPage.cpp" line="172"/>
+        <location filename="SettingPage.cpp" line="108"/>
+        <location filename="SettingPage.cpp" line="162"/>
+        <location filename="SettingPage.cpp" line="168"/>
+        <source>Auto start state:%1</source>
+        <translation>自启动状态:%1</translation>
+    </message>
+    <message>
+        <location filename="SettingPage.cpp" line="108"/>
+        <location filename="SettingPage.cpp" line="162"/>
+        <location filename="SettingPage.cpp" line="168"/>
+        <source>True</source>
+        <translation>开启</translation>
+    </message>
+    <message>
+        <location filename="SettingPage.cpp" line="108"/>
+        <location filename="SettingPage.cpp" line="162"/>
+        <location filename="SettingPage.cpp" line="168"/>
+        <source>False</source>
+        <translation>关闭</translation>
+    </message>
+    <message>
+        <location filename="SettingPage.cpp" line="175"/>
         <source>New Item</source>
         <translation>新建</translation>
     </message>
     <message>
-        <location filename="SettingPage.cpp" line="173"/>
+        <location filename="SettingPage.cpp" line="176"/>
         <source>Delete Item</source>
         <translation>删除</translation>
     </message>

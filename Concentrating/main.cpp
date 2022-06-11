@@ -1,9 +1,7 @@
 #include "MainWindow.h"
 #include <QtWidgets/QApplication>
-#include <signal.h>
 #include <qtranslator.h>
 #include <qdir.h>
-#include "AutoStartHelper.h"
 
 #pragma data_seg("shared")
 

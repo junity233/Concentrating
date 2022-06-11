@@ -35,6 +35,13 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
+           <widget class="QLabel" name="autoStartState">
+            <property name="text">
+             <string>Auto start state</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="enableAutoStart">
             <property name="text">
              <string>Enable Auto Start</string>
