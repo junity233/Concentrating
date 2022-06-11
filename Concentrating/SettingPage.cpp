@@ -19,6 +19,11 @@ SettingPage::SettingPage(QWidget *parent)
 
 	connect(ui.tabWidget, &QTabWidget::currentChanged, this, &SettingPage::reset);
 
+	ui.autoStartScript->setFilter(tr("Lua Script (*.lua)"));
+	ui.autoStartScript->setTitle(tr("Open Script"));
+	ui.autoStartScript->setMode(PathEdit::Open);
+	ui.autoStartScript->setDefaultPath("scripts");
+
 	settingModel = new QVariantModel(this);
 	settingDelegate = new QVariantDelegate(this);
 	ui.scriptSettingView->setModel(settingModel);

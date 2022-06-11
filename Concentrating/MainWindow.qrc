@@ -1,5 +1,9 @@
 <RCC>
     <qresource prefix="/">
+        <file>resource/editor.png</file>
+        <file>resource/log.png</file>
+        <file>resource/setting.png</file>
+        <file>resource/file-hiding.png</file>
         <file>icon.ico</file>
         <file>resource/folder-open.png</file>
         <file>resource/logout.png</file>
@@ -7,5 +11,9 @@
         <file>resource/close-one.png</file>
         <file>resource/newlybuild.png</file>
         <file>resource/export.png</file>
+        <file>resource/file-code.png</file>
+        <file>resource/browser.png</file>
+        <file>resource/home.png</file>
+        <file>resource/schedule.png</file>
     </qresource>
 </RCC>

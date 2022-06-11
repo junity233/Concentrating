@@ -20,6 +20,10 @@
       <number>0</number>
      </property>
      <widget class="QWidget" name="generalSetting">
+      <attribute name="icon">
+       <iconset resource="MainWindow.qrc">
+        <normaloff>:/resource/home.png</normaloff>:/resource/home.png</iconset>
+      </attribute>
       <attribute name="title">
        <string>General</string>
       </attribute>
@@ -167,6 +171,10 @@
       </layout>
      </widget>
      <widget class="QWidget" name="scriptSetting">
+      <attribute name="icon">
+       <iconset resource="MainWindow.qrc">
+        <normaloff>:/resource/file-code.png</normaloff>:/resource/file-code.png</iconset>
+      </attribute>
       <attribute name="title">
        <string>Script</string>
       </attribute>
@@ -202,6 +210,10 @@
       </layout>
      </widget>
      <widget class="QWidget" name="browserSetting">
+      <attribute name="icon">
+       <iconset resource="MainWindow.qrc">
+        <normaloff>:/resource/browser.png</normaloff>:/resource/browser.png</iconset>
+      </attribute>
       <attribute name="title">
        <string>Browser</string>
       </attribute>
@@ -245,6 +257,10 @@
       </layout>
      </widget>
      <widget class="QWidget" name="schedule">
+      <attribute name="icon">
+       <iconset resource="MainWindow.qrc">
+        <normaloff>:/resource/schedule.png</normaloff>:/resource/schedule.png</iconset>
+      </attribute>
       <attribute name="title">
        <string>Schedule</string>
       </attribute>
@@ -307,7 +323,9 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="MainWindow.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>deleteSetting</sender>

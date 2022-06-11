@@ -46,14 +46,12 @@ static int lua_beep(lua_State* L);
 static int lua_import(lua_State* L);
 
 static int lua_speaker_say(lua_State* L);
-static int lua_speaker_volume(lua_State* L);
-static int lua_speaker_set_volume(lua_State* L);
-static int lua_speaker_rate(lua_State* L);
-static int lua_speaker_set_rate(lua_State* L);
 static int lua_speaker_stop(lua_State* L);
 static int lua_speaker_pause(lua_State* L);
 static int lua_speaker_resume(lua_State* L);
 static int lua_speaker_state(lua_State* L);
+static int lua_speaker_index(lua_State* L);
+static int lua_speaker_newindex(lua_State* L);
 
 static int lua_mouse_lock(lua_State* L);
 static int lua_mouse_unlock(lua_State* L);
@@ -93,6 +91,8 @@ static int lua_media_set_background_volume(lua_State* L);
 static void __lua_to_value(lua_State* L,const QVariant& v);
 static void __lua_to_map(lua_State* L, const QVariantMap& vmap);
 static void __lua_to_list(lua_State* L, const QVariantList& vlst);
+static QString __value_to_string(lua_State* L, int idx);
+static QString __table_to_string(lua_State* L, int idx);
 
 static QVariant __lua_from_value(lua_State* L);
 static QVariantMap __lua_from_table(lua_State* L);
@@ -170,42 +170,70 @@ int lua_keyboard_unlock(lua_State* L) {
 	return 0;
 }
 
+QString __value_to_string(lua_State* L, int idx) {
+	switch (lua_type(L, idx)) {
+	case LUA_TNUMBER:
+		return lua_tostring(L, idx);
+	case LUA_TSTRING:
+		return QStringLiteral("\"%1\"").arg(lua_tostring(L, idx));
+	case LUA_TTABLE:
+		return __table_to_string(L, idx);
+	case LUA_TNIL:
+		return "[Nil]";
+	case LUA_TBOOLEAN:
+		if (lua_toboolean(L, idx))
+			return "True";
+		else
+			return "False";
+	case LUA_TFUNCTION:
+		return "[Function]";
+	case LUA_TUSERDATA:
+		return QStringLiteral("[Userdata \"%1\" at %2]").arg(lua_typename(L, idx)).arg((qint64)lua_touserdata(L, idx));
+	case LUA_TLIGHTUSERDATA:
+		return QStringLiteral("[Light userdata at %2]").arg((qint64)lua_topointer(L, idx));
+	case LUA_TTHREAD:
+		return "[Thread]";
+	case LUA_TNONE:
+		return "[None]";
+	default:
+		return "[Unknown Type]";
+	}
+}
+
+QString __table_to_string(lua_State* L,int idx) {
+	lua_pushnil(L);
+	QString t="{";
+	bool first = true;
+
+	if (idx < 0)
+		idx--;//Ñ¹¼üºó£¬±íË÷Òý¼õ1
+
+	while (lua_next(L, idx)) {
+		lua_pushvalue(L, -2);
+
+		if (!first)
+			t.append(", ");
+		else first = false;
+
+		t += QString("%1 = %2").arg(__value_to_string(L, -1)).arg(__value_to_string(L, -2));
+
+
+		lua_pop(L, 2);
+	}
+
+	t.append("}");
+	return t;
+}
+
 int lua_log(lua_State* L) {
 	int argc = lua_gettop(L);
 	QString t;
 
-	lua_pushlstring(L, "", 0);
-
 	for (int i = 1; i <= argc; i++) {
-
-		switch (lua_type(L, i)) {
-		case LUA_TSTRING:
-		case LUA_TNUMBER:
-			lua_pushvalue(L, i);
-			break;
-		case LUA_TTABLE:
-			lua_pushlstring(L, "[TABLE]", 7);
-			break;
-		case LUA_TNIL:
-			lua_pushlstring(L, "nil", 3);
-			break;
-		case LUA_TBOOLEAN:
-			if(lua_toboolean(L,i))
-				lua_pushlstring(L, "True", 4);
-			else
-				lua_pushlstring(L, "False", 5);
-			break;
-		}
-
-		lua_pushlstring(L, " ", 1);
-		lua_concat(L, 3);
+		t += __value_to_string(L, i);
 	}
 
-	const char* msg = lua_tostring(L, -1);
-
-	emit LuaBinder::instance()->log(msg);
-
-	lua_pop(L, 1);
+	emit LuaBinder::instance()->log(t);
 
 	return 0;
 }
@@ -221,7 +249,6 @@ static int lua_wait(lua_State* L) {
 static inline tm* __get_time() {
 	time_t t = time(NULL);
 	return localtime(&t);
-
 }
 
 static inline bool __time_less_than(tm* t, int h, int m, int s) {
@@ -374,34 +401,6 @@ int lua_speaker_say(lua_State* L)
 	return 0;
 }
 
-int lua_speaker_volume(lua_State* L)
-{
-	lua_pushinteger(L, TextSpeaker::volume());
-
-	return 1;
-}
-
-int lua_speaker_set_volume(lua_State* L)
-{
-	TextSpeaker::setVolume(luaL_checkinteger(L, 1));
-
-	return 0;
-}
-
-int lua_speaker_rate(lua_State* L)
-{
-	lua_pushinteger(L, TextSpeaker::rate());
-
-	return 1;
-}
-
-int lua_speaker_set_rate(lua_State* L)
-{
-	TextSpeaker::setRate(luaL_checkinteger(L, 1));
-
-	return 0;
-}
-
 int lua_speaker_stop(lua_State* L)
 {
 	TextSpeaker::stop();
@@ -425,6 +424,31 @@ int lua_speaker_state(lua_State* L)
 {
 	lua_pushinteger(L, TextSpeaker::state());
 	return 1;
+}
+
+int lua_speaker_index(lua_State* L)
+{
+	QString name = lua_tostring(L, 2);
+
+	if (name == "rate")
+		lua_pushinteger(L, TextSpeaker::rate());
+	else if (name == "volume")
+		lua_pushinteger(L, TextSpeaker::volume());
+	else lua_pushnil(L);
+
+	return 1;
+}
+
+int lua_speaker_newindex(lua_State* L)
+{
+	QString name = lua_tostring(L, 2);
+
+	if (name == "rate")
+		TextSpeaker::setRate(luaL_checkinteger(L, 3));
+	else if (name == "volume")
+		TextSpeaker::setVolume(luaL_checkinteger(L, 3));
+
+	return 0;
 }
 
 int lua_keyboard_set_key_status(lua_State* L)
@@ -885,14 +909,16 @@ static luaL_Reg media_functions[] = {
 
 static luaL_Reg speaker_functions[] = {
 	{"say",lua_speaker_say},
-	{"volume",lua_speaker_volume},
-	{"set_volume",lua_speaker_set_volume},
-	{"rate",lua_speaker_rate},
-	{"set_rate",lua_speaker_set_rate},
 	{"pause",lua_speaker_pause},
 	{"stop",lua_speaker_stop},
 	{"resume",lua_speaker_resume},
 	{"state",lua_speaker_state},
+	{NULL,NULL}
+};
+
+static luaL_Reg speaker_metatable_functions[] = {
+	{"__index",lua_speaker_index},
+	{"__newindex",lua_speaker_newindex},
 	{NULL,NULL}
 };
 
@@ -935,6 +961,8 @@ void LuaBinder::BindLua(lua_State* L)
 
 	lua_pushlstring(L, "speaker", 7);
 	luaL_newlib(L, speaker_functions);
+	luaL_newlib(L, speaker_metatable_functions);
+	lua_setmetatable(L, -2);
 	lua_rawset(L, -3);
 
 	/*lua_pushlstring(L, "media", 5);

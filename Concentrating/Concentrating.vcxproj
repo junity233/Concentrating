@@ -34,11 +34,13 @@
     <QtInstall>5.12.12 64bit</QtInstall>
     <QtModules>core;gui;multimedia;widgets;webenginewidgets;texttospeech</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
+    <QtDeploy>false</QtDeploy>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtInstall>5.12.12 64bit</QtInstall>
     <QtModules>core;gui;multimedia;widgets;webenginewidgets;texttospeech</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
+    <QtDeploy>false</QtDeploy>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
     <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
@@ -115,7 +117,6 @@
       <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
       <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
     </ClCompile>
-    <ClCompile Include="MethodRunner.cpp" />
     <ClCompile Include="MouseHelper.cpp" />
     <ClCompile Include="MusicPlayer.cpp" />
     <ClCompile Include="PathEdit.cpp" />
@@ -177,7 +178,7 @@
     <QtMoc Include="LuaScriptRunnerPool.h" />
     <QtMoc Include="MethodInvoker.hpp" />
     <ClInclude Include="CronTime.h" />
-    <ClInclude Include="MethodRunner.h" />
+    <ClInclude Include="MethodRunner.hpp" />
     <ClInclude Include="ShutdownHelper.h" />
     <QtMoc Include="SettingTableModel.h" />
     <QtMoc Include="ScriptListModel.h" />
@@ -208,11 +209,22 @@
   <ItemGroup>
     <Image Include="icon.ico" />
     <Image Include="resource\back.png" />
+    <Image Include="resource\browser.png" />
+    <Image Include="resource\close-one.png" />
+    <Image Include="resource\editor.png" />
+    <Image Include="resource\export.png" />
+    <Image Include="resource\file-code.png" />
+    <Image Include="resource\file-hiding.png" />
     <Image Include="resource\folder-open.png" />
+    <Image Include="resource\home.png" />
+    <Image Include="resource\log.png" />
     <Image Include="resource\logout.png" />
+    <Image Include="resource\newlybuild.png" />
     <Image Include="resource\next.png" />
     <Image Include="resource\refresh.png" />
     <Image Include="resource\save.png" />
+    <Image Include="resource\schedule.png" />
+    <Image Include="resource\setting.png" />
   </ItemGroup>
   <ItemGroup>
     <QtTranslation Include="zh.ts" />

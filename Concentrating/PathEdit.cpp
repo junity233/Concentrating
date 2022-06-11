@@ -8,7 +8,9 @@ PathEdit::PathEdit(QWidget *parent)
 	: QWidget(parent)
 {
 	_path = new QLineEdit(this);
-	_select = new QPushButton(QStringLiteral("..."), this);
+	_select = new QPushButton(this);
+
+	_select->setIcon(QIcon(":/resource/folder-open.png"));
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 

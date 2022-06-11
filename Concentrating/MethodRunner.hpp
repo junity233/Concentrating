@@ -8,12 +8,14 @@ class MethodRunner
 {
 public:
 	MethodRunner(std::function<void()> method)
-		:QRunnable()
-	{
-		_method = method;
-	}
+		:QRunnable(),
+		_method(method) 
+	{}
 
-	void run() override;
+	void run() override
+	{
+		_method();
+	}
 
 private:
 	std::function<void()> _method;

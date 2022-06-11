@@ -127,9 +127,6 @@
     <ClCompile Include="ShutdownHelper.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="MethodRunner.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
     <ClCompile Include="LuaScriptRunnerPool.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
@@ -146,13 +143,10 @@
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="PathEdit.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="LuaBinding.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="MainWindow.h">
       <Filter>Header Files\Widgets</Filter>
     </QtMoc>
@@ -205,7 +199,10 @@
       <Filter>Header Files\Helpers</Filter>
     </QtMoc>
     <QtMoc Include="PathEdit.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Widgets</Filter>
+    </QtMoc>
+    <QtMoc Include="LuaBinding.h">
+      <Filter>Header Files\Helpers</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -244,13 +241,10 @@
     <ClInclude Include="ProcessProtecter.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="ShutdownHelper.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
     <ClInclude Include="version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MethodRunner.h">
+    <ClInclude Include="MethodRunner.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="MusicPlayer.h">
@@ -261,6 +255,9 @@
     </ClInclude>
     <ClInclude Include="CronTime.h">
       <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="ShutdownHelper.h">
+      <Filter>Header Files\Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -291,6 +288,39 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="resource\save.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\close-one.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\editor.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\export.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\file-hiding.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\log.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\newlybuild.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\setting.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\file-code.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\browser.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\home.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\schedule.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

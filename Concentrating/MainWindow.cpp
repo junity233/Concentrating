@@ -380,8 +380,7 @@ void MainWindow::openScript(const QUrl& path)
     page->setCode(code);
     page->setPath(path);
 
-    int idx = ui.scripts->addTab(page, path.fileName());
-    ui.scripts->setCurrentIndex(idx);
+    addScriptTab(page);
 
     f.close();
 }
@@ -405,8 +404,14 @@ void MainWindow::newScript()
 {
     ScriptPage* newScriptPage = createScriptPage();
 
+    addScriptTab(newScriptPage);
+}
+
+void MainWindow::addScriptTab(ScriptPage* newScriptPage)
+{
     int idx = ui.scripts->addTab(newScriptPage, tr("New Script"));
     ui.scripts->setCurrentIndex(idx);
+    ui.scripts->setTabIcon(idx, QIcon(":/resource/file-code.png"));
 }
 
 void MainWindow::closeScript()
@@ -481,7 +486,8 @@ void MainWindow::loadLastScripts()
 
     for (const QUrl& script : scripts)
     {
-        openScript(script);
+        if(script.isValid())
+            openScript(script);
     }
 }
 
@@ -502,7 +508,7 @@ void MainWindow::saveLastScripts()
     for (int i = 0; i < ui.scripts->count(); i++) {
         ScriptPage* page = scriptPage(i);
 
-        if (page)
+        if (page && page->path().isValid())
             scripts.append(page->path());
         else
             this->log(tr("Save last script failed:Cannot get path of page %1").arg(i), LogPage::System);

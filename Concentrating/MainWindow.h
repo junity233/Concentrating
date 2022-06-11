@@ -51,6 +51,7 @@ private slots:
 
     void openScript();
     void newScript();
+    void addScriptTab(ScriptPage* newScriptPage);
     void closeScript();
     void closeScript(int idx);
 
