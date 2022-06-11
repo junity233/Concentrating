@@ -110,6 +110,10 @@
    </property>
   </action>
   <action name="actionNew">
+   <property name="icon">
+    <iconset resource="MainWindow.qrc">
+     <normaloff>:/resource/newlybuild.png</normaloff>:/resource/newlybuild.png</iconset>
+   </property>
    <property name="text">
     <string>New</string>
    </property>
@@ -118,6 +122,10 @@
    </property>
   </action>
   <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="MainWindow.qrc">
+     <normaloff>:/resource/folder-open.png</normaloff>:/resource/folder-open.png</iconset>
+   </property>
    <property name="text">
     <string>Open</string>
    </property>
@@ -126,6 +134,10 @@
    </property>
   </action>
   <action name="actionSaveScript">
+   <property name="icon">
+    <iconset resource="MainWindow.qrc">
+     <normaloff>:/resource/save.png</normaloff>:/resource/save.png</iconset>
+   </property>
    <property name="text">
     <string>Save</string>
    </property>
@@ -134,11 +146,19 @@
    </property>
   </action>
   <action name="actionExit">
+   <property name="icon">
+    <iconset resource="MainWindow.qrc">
+     <normaloff>:/resource/logout.png</normaloff>:/resource/logout.png</iconset>
+   </property>
    <property name="text">
     <string>Exit</string>
    </property>
   </action>
   <action name="actionScriptSaveAll">
+   <property name="icon">
+    <iconset resource="MainWindow.qrc">
+     <normaloff>:/resource/save.png</normaloff>:/resource/save.png</iconset>
+   </property>
    <property name="text">
     <string>Save All</string>
    </property>
@@ -147,11 +167,19 @@
    </property>
   </action>
   <action name="actionScriptSaveAs">
+   <property name="icon">
+    <iconset resource="MainWindow.qrc">
+     <normaloff>:/resource/export.png</normaloff>:/resource/export.png</iconset>
+   </property>
    <property name="text">
     <string>Save As</string>
    </property>
   </action>
   <action name="actionScriptClose">
+   <property name="icon">
+    <iconset resource="MainWindow.qrc">
+     <normaloff>:/resource/close-one.png</normaloff>:/resource/close-one.png</iconset>
+   </property>
    <property name="text">
     <string>Close</string>
    </property>

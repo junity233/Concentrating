@@ -56,6 +56,9 @@ private slots:
 
     void exit();
 
+    void loadLastScripts();
+    void saveLastScripts();
+
 protected:
     void closeEvent(QCloseEvent* event);
 
@@ -75,6 +78,8 @@ private:
 
     void setupScriptPage(ScriptPage* page);
     ScriptPage* createScriptPage();
+
+    void openScript(const QUrl& path);
 
 
 private:

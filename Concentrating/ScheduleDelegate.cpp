@@ -19,6 +19,7 @@ QWidget* ScheduleDelegate::createEditor(QWidget* parent, const QStyleOptionViewI
 		editor->setFilter(tr("Lua script (*.lua)"));
 		editor->setMode(PathEdit::Open);
 		editor->setTitle(tr("Select script..."));
+		editor->setDefaultPath("script");
 		
 		return editor;
 	}

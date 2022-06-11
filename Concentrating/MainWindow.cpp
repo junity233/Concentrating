@@ -32,16 +32,17 @@
 
 MainWindow* MainWindow::_instance = Q_NULLPTR;
 
+#define foreach_scripts(iterator) for(int iterator = 0; iterator < ui.scripts->count(); iterator ++)
+
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
 {
-    SettingManager::instance()->setPath(QUrl::fromLocalFile(QDir(qApp->applicationDirPath()).absoluteFilePath("config.dat")));
+    SettingManager::instance()->setPath(QUrl::fromLocalFile("config.dat"));
     SettingManager::instance()->load();
 
     _instance = this;
 
     setupBrowser();
-
 
     ui.setupUi(this);
 
@@ -74,6 +75,13 @@ MainWindow::MainWindow(QWidget* parent)
 
     this->log(tr("Setup process protection."), LogPage::System);
     ProcessProtecter::protect(ProcessHelper::currentPid());
+
+    loadLastScripts();
+
+    QDir dir = QDir("scripts");
+    if (!dir.exists())
+        QDir().mkdir("scripts");
+
 
     emit initializeFinished();
 }
@@ -302,11 +310,14 @@ void MainWindow::runScript(const QUrl& path)
     f.open(QIODevice::ReadOnly);
 
     if (!f.isOpen()) {
-        QMessageBox::critical(
-            this,
-            tr("Error"),
-            tr("Open file %1 failed!").arg(path.toLocalFile())
-        );
+        this->log(tr("Run script \"%1\" failed:Cannot open file!").arg(path.toLocalFile()), LogPage::System);
+
+        if (settingManager->value("system.notice_script_failed").toBool()) {
+            _systemTray->showMessage(
+                tr("Error"),
+                tr("Run script \"%1\" failed:Cannot open file!").arg(path.toLocalFile())
+            );
+        }
 
         return;
     }
@@ -342,19 +353,14 @@ void MainWindow::scriptSaveAs()
     currentScriptPage()->saveAs();
 }
 
-void MainWindow::openScript()
+void MainWindow::openScript(const QUrl& path)
 {
-    ScriptPage* page = createScriptPage();
-
-    QUrl path = QFileDialog::getOpenFileUrl(
-        this,
-        tr("Open Script"),
-        QUrl(),
-        tr("Lua script (*.lua)")
-    );
-
-    if (path.isEmpty())
-        return;
+    foreach_scripts(i) {
+        ScriptPage* page = scriptPage(i);
+        if(page)
+            if (path == page->path())
+                return;
+    }
 
     QFile f(path.toLocalFile());
 
@@ -368,21 +374,39 @@ void MainWindow::openScript()
         );
         return;
     }
+    ScriptPage* page = createScriptPage();
 
-    QString code = f.readAll();
+    QString code = QString::fromUtf8(f.readAll());
     page->setCode(code);
     page->setPath(path);
 
-    ui.scripts->addTab(page, path.fileName());
+    int idx = ui.scripts->addTab(page, path.fileName());
+    ui.scripts->setCurrentIndex(idx);
 
     f.close();
+}
+
+void MainWindow::openScript()
+{
+    QUrl path = QFileDialog::getOpenFileUrl(
+        this,
+        tr("Open Script"),
+        QUrl::fromLocalFile("scripts"),
+        tr("Lua script (*.lua)")
+    );
+
+    if (path.isEmpty())
+        return;
+
+    openScript(path);
 }
 
 void MainWindow::newScript()
 {
     ScriptPage* newScriptPage = createScriptPage();
 
-    ui.scripts->addTab(newScriptPage, tr("New Script"));
+    int idx = ui.scripts->addTab(newScriptPage, tr("New Script"));
+    ui.scripts->setCurrentIndex(idx);
 }
 
 void MainWindow::closeScript()
@@ -409,10 +433,11 @@ void MainWindow::closeScript(int idx)
         else if (res == QMessageBox::Save)
             page->save();
 
-        ui.scripts->removeTab(ui.scripts->indexOf(page));
-        page->close();
-        page->deleteLater();
     }
+
+    ui.scripts->removeTab(ui.scripts->indexOf(page));
+    page->close();
+    page->deleteLater();
 }
 
 void MainWindow::exit()
@@ -422,7 +447,10 @@ void MainWindow::exit()
         if (checkPassword()) {
             if (ProcessProtecter::isProtected())
                 ProcessProtecter::unprotect();
+
             saveConfig();
+            saveLastScripts();
+
             QApplication::exit(0);
         }
     }
@@ -430,4 +458,56 @@ void MainWindow::exit()
         QMessageBox::warning(nullptr, tr("Note"), tr("A script is still running!Exiting is banned!"));
         this->log(tr("Exiting operation refused."), LogPage::System);
     }
+}
+
+void MainWindow::loadLastScripts()
+{
+    QFile f("last.dat");
+
+    f.open(QIODevice::ReadOnly);
+
+    if (!f.isOpen()) {
+        this->log(tr("Load last scripts failed:Cannot open file!"), LogPage::System);
+        return;
+    }
+
+    QList<QUrl> scripts;
+
+    QDataStream s(&f);
+
+    s >> scripts;
+
+    f.close();
+
+    for (const QUrl& script : scripts)
+    {
+        openScript(script);
+    }
+}
+
+void MainWindow::saveLastScripts()
+{
+    QFile f("last.dat");
+    f.open(QIODevice::WriteOnly);
+
+    if (!f.isOpen()) {
+        this->log(tr("Save last scripts failed:Cannot open file!"), LogPage::System);
+        return;
+    }
+
+    QDataStream s(&f);
+
+    QList<QUrl> scripts;
+
+    for (int i = 0; i < ui.scripts->count(); i++) {
+        ScriptPage* page = scriptPage(i);
+
+        if (page)
+            scripts.append(page->path());
+        else
+            this->log(tr("Save last script failed:Cannot get path of page %1").arg(i), LogPage::System);
+    }
+
+    s << scripts;
+    f.close();
 }

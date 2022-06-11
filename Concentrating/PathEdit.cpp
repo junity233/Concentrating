@@ -37,14 +37,14 @@ void PathEdit::selectPath() {
 		newPath = QFileDialog::getOpenFileName(
 			this,
 			_title,
-			"",
+			_defaultPath,
 			_filter
 		);
 	else
 		newPath = QFileDialog::getSaveFileName(
 			this,
 			_title,
-			"",
+			_defaultPath,
 			_filter
 		);
 

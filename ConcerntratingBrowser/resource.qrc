@@ -1,12 +1,8 @@
 <RCC>
-    <qresource prefix="/icon">
-        <file alias="dialog-error.png">data/dialog-error.png</file>
-        <file alias="dialog-error.png">data/edit-clear.png</file>
-        <file alias="go-bottom.png">data/go-bottom.png</file>
-        <file alias="go-next.png">data/go-next.png</file>
-        <file alias="go-previous.png">data/go-previous.png</file>
-        <file alias="process-stop.png">data/process-stop.png</file>
-        <file alias="text-html.png">data/text-html.png</file>
-        <file alias="view-refresh.png">data/view-refresh.png</file>
+    <qresource prefix="/">
+        <file>back.png</file>
+        <file>next.png</file>
+        <file>refresh.png</file>
+        <file>newlybuild.png</file>
     </qresource>
 </RCC>

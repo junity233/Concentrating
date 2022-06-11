@@ -275,6 +275,24 @@
     <Image Include="icon.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="resource\back.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\folder-open.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\logout.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\next.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\refresh.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\save.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <QtTranslation Include="zh.ts">

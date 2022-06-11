@@ -6,6 +6,7 @@
 #include <qfile.h>
 #include <qfiledialog.h>
 #include <qevent.h>
+#include <qdir.h>
 
 #include <lua.hpp>
 
@@ -67,7 +68,7 @@ void ScriptPage::save()
 		return;
 	}
 
-	f.write(code().toLocal8Bit());
+	f.write(code().toUtf8());
 	_savedCode = code();
 
 	emit modifyChanged(false);
@@ -98,7 +99,7 @@ QUrl ScriptPage::getPath()
 	return QFileDialog::getSaveFileUrl(
 		this,
 		tr("Save script..."),
-		QUrl(),
+		QUrl::fromLocalFile("scripts"),
 		tr("Lua scripts (*.lua)")
 	);
 }

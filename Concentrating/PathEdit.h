@@ -30,6 +30,9 @@ public:
 	inline QString path()const { return _path->text(); }
 	inline void setPath(const QString& path) { _path->setText(path); }
 
+	inline QString defaultPath()const { return _defaultPath; }
+	inline void setDefaultPath(const QString& defaultPath) { _defaultPath = defaultPath; }
+
 signals:
 	void pathChanged(const QString& path);
 
@@ -42,5 +45,6 @@ private:
 
 	QString _title;
 	QString _filter;
+	QString _defaultPath;
 	Mode _mode;
 };

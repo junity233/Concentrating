@@ -1,5 +1,11 @@
 <RCC>
     <qresource prefix="/">
         <file>icon.ico</file>
+        <file>resource/folder-open.png</file>
+        <file>resource/logout.png</file>
+        <file>resource/save.png</file>
+        <file>resource/close-one.png</file>
+        <file>resource/newlybuild.png</file>
+        <file>resource/export.png</file>
     </qresource>
 </RCC>

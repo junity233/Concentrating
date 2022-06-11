@@ -2,6 +2,7 @@
 #include <QtWidgets/QApplication>
 #include <signal.h>
 #include <qtranslator.h>
+#include <qdir.h>
 #include "AutoStartHelper.h"
 
 #pragma data_seg("shared")
@@ -19,6 +20,8 @@ int main(int argc, char *argv[])
 
     started = true;
     QApplication a(argc, argv);
+
+    QDir::setCurrent(QApplication::applicationDirPath());
 
     QTranslator t;
     t.load("zh");

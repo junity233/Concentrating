@@ -20,7 +20,11 @@
       <item>
        <widget class="QPushButton" name="back">
         <property name="text">
-         <string>&lt;</string>
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resource.qrc">
+          <normaloff>:/back.png</normaloff>:/back.png</iconset>
         </property>
        </widget>
       </item>
@@ -33,21 +37,33 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>&gt;</string>
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resource.qrc">
+          <normaloff>:/next.png</normaloff>:/next.png</iconset>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="refresh">
         <property name="text">
-         <string>Refresh</string>
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resource.qrc">
+          <normaloff>:/refresh.png</normaloff>:/refresh.png</iconset>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="newTab">
         <property name="text">
-         <string>New</string>
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resource.qrc">
+          <normaloff>:/newlybuild.png</normaloff>:/newlybuild.png</iconset>
         </property>
        </widget>
       </item>

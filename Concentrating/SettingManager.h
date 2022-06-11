@@ -5,6 +5,8 @@
 #include <qurl.h>
 #include "QVariantTreeNode.h"
 
+#define settingManager (SettingManager::instance())
+
 class SettingManager
 {
 	SettingManager() {}

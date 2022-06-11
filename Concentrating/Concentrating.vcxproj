@@ -207,6 +207,12 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon.ico" />
+    <Image Include="resource\back.png" />
+    <Image Include="resource\folder-open.png" />
+    <Image Include="resource\logout.png" />
+    <Image Include="resource\next.png" />
+    <Image Include="resource\refresh.png" />
+    <Image Include="resource\save.png" />
   </ItemGroup>
   <ItemGroup>
     <QtTranslation Include="zh.ts" />
