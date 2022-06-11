@@ -14,13 +14,8 @@ Concen包含了Concentraing的核心功能，包括禁用/启用鼠标/键盘，
 
 ### 3.Concen.log(...)
 
-向程序的 “日志” 界面输出一条消息，相邻两个参数使用空格隔开。该函数仅能处理以下类型的参数：
-
-1. number
-2. string
-3. table (显示为[TABLE])
-4. nil (显示为nil)
-5. boolean (显示为True或False)
+向程序的 “日志” 界面输出一条消息，相邻两个参数使用空格隔开。
+该函数几乎能处理所有类型的参数
 
 ### 3.Concen.exec(command)
 
@@ -220,13 +215,15 @@ hosts支持通配符。
 
 让电脑朗读text
 
-### 2.Concen.speaker.set_volume(vol)与Concen.speaker.volume()
+### 2.Concen.speaker.volume
 
-设置/查询当前文本转语音的音量，音量是一个整数，范围从-100到100
+当前文本转语音的音量，音量是一个整数，范围从-100到100
+这是一个属性，可以直接进行赋值
 
-### 3.Concen.speaker.set_rate(rate)与Concen.speaker.rate()
+### 3.Concen.speaker.rate
 
-设置/查询当前文本转语音的速度，速度是一个整数，范围从-100到100
+当前文本转语音的速度，速度是一个整数，范围从-100到100
+这是一个属性，可以直接进行赋值
 
 ### 4.Concen.speaker.pause()
 
